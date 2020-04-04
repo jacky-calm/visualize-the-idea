@@ -1,7 +1,64 @@
 <!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+    .chart rect {
+        fill: steelblue;
+    }
+
+    .chart text {
+        fill: white;
+        font: 10px sans-serif;
+        text-anchor: end;
+    }
+</style>
+
 <head>
     <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script>
-        
-    </script>
+
+<body>
+
+</body>
+<script>
+    var width = "720";
+    var height = "720";
+
+    //Create SVG element
+    var svg = d3.select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("border", 1)
+        ;
+    var g = svg.append("g");
+    var leader = g.append("rect")
+        .attr("x", 60)
+        .attr("y", 60)
+        .attr("height", "30")
+        .attr("width", "80")
+        .style("stroke", "blue")
+        .style("fill", "none")
+        .style("stroke-width", 1);
+    var leader_label = g.append("text")
+            .attr("x", 100)
+            .attr("y", 80)
+            .text("leader")
+            .attr("font-family", "sans-serif")
+            .attr("font-size", "20px")
+            .attr("text-anchor", "middle")
+            .attr("fill", "red")
+            ;    
+
+    var follower1 = g.append("rect")
+        .attr("x", 160)
+        .attr("y", 160)
+        .attr("height", "30")
+        .attr("width", "80")
+        .style("stroke", "red")
+        .style("fill", "red")
+        .style("stroke-width", 1);
+
+
+
+
+</script>
 </head>

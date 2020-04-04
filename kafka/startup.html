@@ -19,44 +19,51 @@
 
 </body>
 <script>
-    var width = "720";
-    var height = "720";
+    let svg_width = "720";
+    let svg_height = "720";
 
     //Create SVG element
-    var svg = d3.select("body")
+    let svg = d3.select("body")
         .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("border", 1)
-        ;
-    var g = svg.append("g");
-    var leader = g.append("rect")
-        .attr("x", 60)
-        .attr("y", 60)
-        .attr("height", "30")
-        .attr("width", "80")
+        .attr("width", svg_width)
+        .attr("height", svg_height)
+        .attr("border", 1);
+
+    let nodes = [
+        {
+            "x": svg_width / 2,
+            "y": svg_height / 2,
+            "height": 30,
+            "width": 80,
+            "label": "leader"
+        },
+        {
+            "x": svg_width / 2 + 200,
+            "y": svg_height / 2,
+            "height": 30,
+            "width": 80,
+            "label": "follower"
+        }
+    ];
+
+    let child = svg.append("g").selectAll("g").data(nodes).enter().append('g');
+    child.append("rect")
+        .attr("x", function (d) { return d.x })
+        .attr("y", function (d) { return d.y })
+        .attr("height", function (d) { return d.height })
+        .attr("width", function (d) { return d.width })
         .style("stroke", "blue")
         .style("fill", "none")
         .style("stroke-width", 1);
-    var leader_label = g.append("text")
-            .attr("x", 100)
-            .attr("y", 80)
-            .text("leader")
-            .attr("font-family", "sans-serif")
-            .attr("font-size", "20px")
-            .attr("text-anchor", "middle")
-            .attr("fill", "red")
-            ;    
 
-    var follower1 = g.append("rect")
-        .attr("x", 160)
-        .attr("y", 160)
-        .attr("height", "30")
-        .attr("width", "80")
-        .style("stroke", "red")
-        .style("fill", "red")
-        .style("stroke-width", 1);
-
+    child.append("text")
+        .attr("x", function (d) { return d.x + d.width/2 })
+        .attr("y", function (d) { return d.y + d.height/2+5 })
+        .text(function (d) { return d.label })
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "20px")
+        .attr("text-anchor", "middle")
+        .attr("fill", "red");
 
 
 

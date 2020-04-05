@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vizit</title>
+    <script src="js/svg.min.js"></script>
+    <script src="js/startup.js"></script>
+</head>
+<body>
+
+<script>
+    function createRect(draw, translateX, translateY, node_name) {
+        let group = draw.group().transform({translateX: translateX, translateY: translateY})
+        let rect = draw.rect(10 + node_name.length*8 + 10, 30).attr({fill: 'none', stroke: 'blue'});
+        rect.attr({x: 10, y: 10});
+        group.add(rect);
+
+        let label = draw.text(node_name);
+        label.attr({x: 10 + 15, y: 10});
+        group.add(label);
+    }
+
+    function createEllipse(draw, translateX, translateY, node_name) {
+        let group = draw.group().transform({translateX: translateX, translateY: translateY})
+        let rect = draw.ellipse(10 + node_name.length*8, 50).attr({fill: 'none', stroke: 'blue'});
+        rect.attr({x: 10, y: 10});
+        group.add(rect);
+
+        let label = draw.text(node_name);
+        label.attr({x: 15, y: 10});
+        group.add(label);
+    }
+
+    SVG.on(document, 'DOMContentLoaded', function () {
+        let draw = SVG().addTo('body').attr({width: 1000, height: 800});
+
+        let centralX = 100;
+        let centralY = 200;
+
+        // create brokers
+        let brokerOffsetY = 80;
+        for (let i = 0; i < 3; i++) {
+            createRect(draw, centralX, centralY + brokerOffsetY*i, "broker "+i);
+            createEllipse(draw, centralX+500, centralY + 80*i, "/brokers/ids/"+i);
+        }
+
+        // create consumers
+        // for (let i = 0; i < 3; i++) {
+        //     createRect(draw, centralX+300, centralY + brokerOffsetY*i, "consumer "+i);
+        // }
+
+        createRect(draw, centralX+300, centralY + 100, "zookeeper");
+        createEllipse(draw, centralX+300, centralY + 200, "/controller");
+
+
+        // createRect(draw, centralX-300, centralY + 100, "producer");
+
+    })
+</script>
+</body>
+</html>

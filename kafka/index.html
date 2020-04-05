@@ -2,21 +2,26 @@
 <html>
 <head>
     <title>Vizit</title>
-    <script src="js/svg.min.js"></script>
-    <script src="js/startup.js"></script>
+    <script src="node_modules/@svgdotjs/svg.js/dist/svg.js"></script>
+    <script src="node_modules/@svgdotjs/svg.draggable.js/dist/svg.draggable.js"></script>
+<!--    <script data-main="scripts/main" src="scripts/require.js"></script>-->
 </head>
 <body>
+<div class="graph"></div>
 
 <script>
+
     function createRect(draw, translateX, translateY, node_name) {
         let group = draw.group().transform({translateX: translateX, translateY: translateY})
         let rect = draw.rect(10 + node_name.length*8 + 10, 30).attr({fill: 'none', stroke: 'blue'});
+        // rect.draggy();
         rect.attr({x: 10, y: 10});
         group.add(rect);
 
         let label = draw.text(node_name);
         label.attr({x: 10 + 15, y: 10});
         group.add(label);
+        group.draggable();
     }
 
     function createEllipse(draw, translateX, translateY, node_name) {
@@ -28,6 +33,7 @@
         let label = draw.text(node_name);
         label.attr({x: 15, y: 10});
         group.add(label);
+        group.draggable();
     }
 
     SVG.on(document, 'DOMContentLoaded', function () {

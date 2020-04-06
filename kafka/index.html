@@ -9,6 +9,12 @@
 <body>
 
 <script>
+    // 定义svg对象, 在body里面添加一个svg
+    let svg = SVG().addTo('body').attr({width: 1000, height: 800});
+    // marker: arrow head
+    let marker = svg.marker(13, 13, function (add) {
+        add.path('M2,2 L2,11 L10,6 L2,2').fill('blue').stroke({width: 1, color: 'blue'})
+    }).attr({"refX": "2", "refY": "6", "orient": "auto"});
     // Set the global configs to synchronous
     $.ajaxSetup({
         async: false
@@ -44,37 +50,41 @@
         return group.draggable(); // 支持拖拽
     }
 
+    function buildPathId(path) {
+        let start = path.start;
+        let end = path.end;
+        return `${start}_${end}`;
+    }
+
     function createPath(container, path, marker) {
         let start = path.start;
         let end = path.end;
         let startNode = svg.findOne(`#${start}`);
         let endNode = svg.findOne(`#${end}`);
-        let startX = startNode.data('leftTopX') + startNode.data('width')+ path.startOffsetX;
+        let startX = startNode.data('leftTopX') + startNode.data('width') + path.startOffsetX;
         let startY = startNode.data('leftTopY') + startNode.data('height') + path.startOffsetY;
         let endX = endNode.data('leftTopX') + path.endOffsetX;
         let endY = endNode.data('leftTopY') + path.endOffsetY;
         let data = `M ${startX}, ${startY} L ${endX}, ${endY}`;
-        let result = container.path(data).id(`path-${start}-${end}`)
+        let id = buildPathId(path);
+        let result = container.path(data).id(id)
             .fill('blue')
             .stroke({width: 1, color: 'blue'})
-            .marker('end', marker);
+            .marker('end', marker)
+            .data('points', [startX, startY, endX, endY]);
         return result;
     }
 
-    let svg = SVG().addTo('body').attr({width: 1000, height: 800});
-
-    function animate(start, end) {
-        svg.circle(20).attr({
-            cx: start.data('leftTopX') + start.data('width') + 20,
-            cy: start.data('leftTopY') + start.data('height')
-        }).fill('green').animate(2500, 100, 'now')
-            .move(end.data('leftTopX') - 10, end.data('leftTopY') + 5)
+    function animate(path) {
+        let id = buildPathId(path);
+        let points = svg.findOne(`#${id}`).data('points');
+        return svg.circle(20).attr({cx: points[0], cy: points[1]}).fill('green')
+            .animate(2500, 100, 'now')
+            .move(points[2], points[3]-10)
             .loop(Number.MAX_SAFE_INTEGER, false, 200);
     }
 
     SVG.on(document, 'DOMContentLoaded', function () {
-        // 定义svg对象, 在body里面添加一个svg
-
         $.getJSON("data/brokers.json?" + version, function (data) {
             data.forEach(node => createNode(svg, node))
         });
@@ -83,18 +93,13 @@
             data.forEach(node => createNode(svg, node))
         });
 
-        let marker = svg.marker(13, 13, function (add) {
-            add.path('M2,2 L2,11 L10,6 L2,2').fill('blue').stroke({width: 1, color: 'blue'})
-        }).attr({"refX": "2", "refY": "6", "orient": "auto"});
-
         $.getJSON("data/paths.json?" + version, function (data) {
             data.forEach(value => createPath(svg, value, marker));
         });
 
-        // for (let i = 1; i <= 3; i++) {
-        //     animate(svg.findOne('#broker'+i), svg.findOne('#zookeeper'));
-        //     animate(svg.findOne('#zookeeper'), svg.findOne('#broker-id-'+i));
-        // }
+        $.getJSON("data/paths.json?" + version, function (data) {
+            data.forEach(value => animate(value));
+        });
 
     })
 </script>

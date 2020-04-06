@@ -5,14 +5,15 @@
     <script src="node_modules/@svgdotjs/svg.js/dist/svg.js"></script>
     <script src="node_modules/@svgdotjs/svg.draggable.js/dist/svg.draggable.js"></script>
 <!--    <script data-main="scripts/main" src="scripts/require.js"></script>-->
+    <script src="node_modules/svg.draggy.js/src/svg.draggy.js"></script>
+    <script src="node_modules/jquery/dist/jquery.js"></script>
 </head>
 <body>
-<div class="graph"></div>
 
 <script>
 
     function createRect(draw, translateX, translateY, node_name) {
-        let group = draw.group().transform({translateX: translateX, translateY: translateY})
+        let group = draw.group().transform({translateX: translateX, translateY: translateY}).id(node_name);
         let rect = draw.rect(10 + node_name.length*8 + 10, 30).attr({fill: 'none', stroke: 'blue'});
         // rect.draggy();
         rect.attr({x: 10, y: 10});
@@ -21,11 +22,12 @@
         let label = draw.text(node_name);
         label.attr({x: 10 + 15, y: 10});
         group.add(label);
-        group.draggable();
+        // group.draggable();
+        return group.draggy();
     }
 
     function createEllipse(draw, translateX, translateY, node_name) {
-        let group = draw.group().transform({translateX: translateX, translateY: translateY})
+        let group = draw.group().transform({translateX: translateX, translateY: translateY}).id(node_name);
         let rect = draw.ellipse(10 + node_name.length*8, 50).attr({fill: 'none', stroke: 'blue'});
         rect.attr({x: 10, y: 10});
         group.add(rect);
@@ -33,32 +35,40 @@
         let label = draw.text(node_name);
         label.attr({x: 15, y: 10});
         group.add(label);
-        group.draggable();
+        // group.draggable();
+        return group.draggy();
     }
 
     SVG.on(document, 'DOMContentLoaded', function () {
-        let draw = SVG().addTo('body').attr({width: 1000, height: 800});
-
+        let svg = SVG().addTo('body').attr({width: 1000, height: 800});
+        let topGroup = svg.group();
+        let marker = topGroup.marker(13, 13, function(add) {
+            add.path('M2,2 L2,11 L10,6 L2,2').fill('blue').stroke({ width: 1, color:'blue' })
+        }).attr({  "refX":"2", "refY":"6",  "orient":"auto"});
         let centralX = 100;
         let centralY = 200;
 
         // create brokers
         let brokerOffsetY = 80;
         for (let i = 0; i < 3; i++) {
-            createRect(draw, centralX, centralY + brokerOffsetY*i, "broker "+i);
-            createEllipse(draw, centralX+500, centralY + 80*i, "/brokers/ids/"+i);
+            createRect(topGroup, centralX, centralY + brokerOffsetY*i, "broker "+i);
+            createEllipse(topGroup, centralX+500, centralY + 80*i, "/brokers/ids/"+i);
         }
 
         // create consumers
         // for (let i = 0; i < 3; i++) {
-        //     createRect(draw, centralX+300, centralY + brokerOffsetY*i, "consumer "+i);
+        //     createRect(svg, centralX+300, centralY + brokerOffsetY*i, "consumer "+i);
         // }
 
-        createRect(draw, centralX+300, centralY + 100, "zookeeper");
-        createEllipse(draw, centralX+300, centralY + 200, "/controller");
+        let zookeeper = createRect(topGroup, centralX+300, centralY + 100, "zookeeper")
+        let controller = createEllipse(topGroup, centralX+300, centralY + 200, "/controller")
 
+        let path = topGroup.path(`M ${centralX+100}, ${centralY+30} L ${centralX+300}, ${centralY + 110}`)
+            .fill('red')
+            .stroke({ width: 1, color: 'blue' })
+            .marker('end', marker);
 
-        // createRect(draw, centralX-300, centralY + 100, "producer");
+        // createRect(svg, centralX-300, centralY + 100, "producer");
 
     })
 </script>

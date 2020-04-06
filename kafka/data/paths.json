@@ -1,10 +1,50 @@
 [
   {
-    "id": "path-broker1-zookeeper",
-    "data": "M 200, 230 L 390, 310"
+    "start": "broker1",
+    "end": "zookeeper",
+    "startOffsetX": 20,
+    "startOffsetY": 0,
+    "endOffsetX": -10,
+    "endOffsetY": 10
   },
   {
-    "id": "path-broker1-zookeeper",
-    "data": "M 520, 310 L 680, 230"
+    "start": "broker2",
+    "end": "zookeeper",
+    "startOffsetX": 20,
+    "startOffsetY": 0,
+    "endOffsetX": -10,
+    "endOffsetY": 20
+  },
+  {
+    "start": "broker3",
+    "end": "zookeeper",
+    "startOffsetX": 20,
+    "startOffsetY": 0,
+    "endOffsetX": -10,
+    "endOffsetY": 30
+  },
+  {
+    "start": "zookeeper",
+    "end": "brokers-ids-1",
+    "startOffsetX": 20,
+    "startOffsetY": -10,
+    "endOffsetX": -20,
+    "endOffsetY": 20
+  },
+  {
+    "start": "zookeeper",
+    "end": "brokers-ids-2",
+    "startOffsetX": 20,
+    "startOffsetY": 0,
+    "endOffsetX": -20,
+    "endOffsetY": 15
+  },
+  {
+    "start": "zookeeper",
+    "end": "brokers-ids-3",
+    "startOffsetX": 20,
+    "startOffsetY": 10,
+    "endOffsetX": -20,
+    "endOffsetY": 10
   }
 ]

@@ -3,6 +3,8 @@
   "lockfileVersion": 1,
   "dependencies": {
     "@svgdotjs/svg.draggable.js": "^3.0.2",
-    "@svgdotjs/svg.js": "^3.0.16"
+    "@svgdotjs/svg.js": "^3.0.16",
+    "jquery": "^3.4.1",
+    "svg.draggy.js": "^1.1.1"
   }
 }

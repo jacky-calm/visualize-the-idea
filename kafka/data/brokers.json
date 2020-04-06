@@ -24,7 +24,7 @@
   },
   {
     "group": {
-      "id": "broker1",
+      "id": "broker2",
       "transform": {
         "translateX": 100,
         "translateY": 300
@@ -38,7 +38,7 @@
       }
     },
     "label": {
-      "text": "broker1",
+      "text": "broker2",
       "attributes": {
         "x": 24,
         "y": 8
@@ -47,7 +47,7 @@
   },
   {
     "group": {
-      "id": "broker1",
+      "id": "broker3",
       "transform": {
         "translateX": 100,
         "translateY": 400
@@ -61,35 +61,11 @@
       }
     },
     "label": {
-      "text": "broker1",
-      "attributes": {
-        "x": 24,
-        "y": 8
-      }
-    }
-  },
-  {
-    "group": {
-      "id": "zookeeper",
-      "transform": {
-        "translateX": 300,
-        "translateY": 300
-      }
-    },
-    "shape": {
-      "type": "rect",
-      "attributes": {
-        "x": 10,
-        "y": 10
-      }
-    },
-    "label": {
-      "text": "zookeeper",
+      "text": "broker3",
       "attributes": {
         "x": 24,
         "y": 8
       }
     }
   }
-
 ]

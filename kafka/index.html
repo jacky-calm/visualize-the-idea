@@ -13,19 +13,6 @@
 <script>
     let version = Date.now();
 
-    function createEllipse(draw, translateX, translateY, node_name) {
-        let group = draw.group().transform({translateX: translateX, translateY: translateY}).id(node_name);
-        let rect = draw.ellipse(10 + node_name.length * 8, 50).attr({fill: 'none', stroke: 'blue'});
-        rect.attr({x: 10, y: 10});
-        group.add(rect);
-
-        let label = draw.text(node_name);
-        label.attr({x: 15, y: 10});
-        group.add(label);
-        // group.draggable();
-        return group.draggy();
-    }
-
     function createNode(container, data) {
         console.log(data);
         let group = container.group()
@@ -42,34 +29,38 @@
         return group.draggy();
     }
 
-    SVG.on(document, 'DOMContentLoaded', function () {
-        let svg = SVG().addTo('body').attr({width: 1000, height: 800});
+    function createPath(container, data, marker) {
+        container.path(data.data).id(data.id)
+            .fill('blue')
+            .stroke({width: 1, color: 'blue'})
+            .marker('end', marker);
+    }
 
+    let svg = SVG().addTo('body').attr({width: 1000, height: 800});
+    SVG.on(document, 'DOMContentLoaded', function () {
         $.getJSON("data/brokers.json?"+version, function (data) {
             data.forEach(node => createNode(svg, node))
         });
 
-        let topGroup = svg.group();
-        let marker = topGroup.marker(13, 13, function (add) {
+        $.getJSON("data/zookeeper.json?"+version, function (data) {
+            data.forEach(node => createNode(svg, node))
+        });
+
+        let marker = svg.marker(13, 13, function (add) {
             add.path('M2,2 L2,11 L10,6 L2,2').fill('blue').stroke({width: 1, color: 'blue'})
         }).attr({"refX": "2", "refY": "6", "orient": "auto"});
-        let centralX = 100;
-        let centralY = 200;
 
-        // // create brokers
-        // let brokerOffsetY = 80;
-        // for (let i = 0; i < 3; i++) {
-        //     createEllipse(topGroup, centralX+500, centralY + 80*i, "/brokers/ids/"+i);
-        // }
 
-        let controller = createEllipse(topGroup, centralX + 300, centralY + 200, "/controller")
 
-        let path = topGroup.path(`M ${centralX + 100}, ${centralY + 30} L ${centralX + 300}, ${centralY + 110}`)
-            .fill('red')
-            .stroke({width: 1, color: 'blue'})
-            .marker('end', marker);
-
-        // createRect(svg, centralX-300, centralY + 100, "producer");
+        $.getJSON("data/paths.json?"+version, function (data) {
+            data.forEach(node => createPath(svg, node, marker))
+        });
+        console.log(svg);
+        // svg.findOne("#path-broker1-zookeeper").animate(2000, 1000, 'now').attr({ fill: '#f03' })
+        // "data": "M 200, 230 L 390, 310"
+        let circle1 = svg.circle(20).attr({cx: 200, cy:230}).fill('green').animate(2000, 100, 'now').move(380, 300);
+        // "data": "M 520, 310 L 680, 230"
+        let circle2 = svg.circle(20).attr({cx: 520, cy:310}).fill('green').animate(2000, 2000, 'after').move(670, 220);
 
     })
 </script>

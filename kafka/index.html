@@ -108,16 +108,42 @@
         $("svg").find("path").attr("display", "none");
         $("svg").find("circle").attr("display", "none");
 
+        $("#circle-broker2_zookeeper").attr("fill", "pink");
+        $("#circle-zookeeper_brokers-ids-2").attr("fill", "pink");
+
+        $("#circle-broker3_zookeeper").attr("fill", "red");
+        $("#circle-zookeeper_brokers-ids-3").attr("fill", "red");
+
         ['zookeeper',
             'broker1', 'broker1_zookeeper', 'circle-broker1_zookeeper','brokers-ids-1','zookeeper_brokers-ids-1','circle-zookeeper_brokers-ids-1',
-            'controller', 'zookeeper_controller', 'circle-zookeeper_controller'
+            'controller', 'zookeeper_controller', 'circle-zookeeper_controller',
+            'broker2', 'broker2_zookeeper', 'circle-broker2_zookeeper','brokers-ids-2','zookeeper_brokers-ids-2','circle-zookeeper_brokers-ids-2',
+            'broker3', 'broker3_zookeeper', 'circle-broker3_zookeeper','brokers-ids-3','zookeeper_brokers-ids-3','circle-zookeeper_brokers-ids-3'
         ]
             .forEach(function(value, index) {
             setTimeout(
                 function () {
                     $("#"+value).removeAttr("display");
-                }, 5*index);
+                }, 800*index);
         });
+
+        setTimeout(
+            function () {
+                ['broker1', 'broker1_zookeeper', 'circle-broker1_zookeeper']
+                    .forEach(function(value, index) {
+                        $("#"+value).attr("display", "none");
+                    });
+            }, 20000);
+
+        setTimeout(
+            function () {
+                ['brokers-ids-1','zookeeper_brokers-ids-1','circle-zookeeper_brokers-ids-1']
+                    .forEach(function(value, index) {
+                        $("#"+value).attr("display", "none");
+                    });
+                $("#circle-zookeeper_controller").attr("fill", "pink");
+                $('#controller').find('tspan').html('/controller (broker1)')
+            }, 22000);
 
 
     })

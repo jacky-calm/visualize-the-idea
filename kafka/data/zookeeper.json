@@ -24,6 +24,29 @@
   },
   {
     "group": {
+      "id": "controller",
+      "transform": {
+        "translateX": 350,
+        "translateY": 100
+      }
+    },
+    "shape": {
+      "type": "rect",
+      "attributes": {
+        "x": 10,
+        "y": 10
+      }
+    },
+    "label": {
+      "text": "/controller (broker0)",
+      "attributes": {
+        "x": 24,
+        "y": 8
+      }
+    }
+  },
+  {
+    "group": {
       "id": "brokers-ids-1",
       "transform": {
         "translateX": 700,

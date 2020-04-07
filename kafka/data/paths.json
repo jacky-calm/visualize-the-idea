@@ -46,5 +46,13 @@
     "startOffsetY": 10,
     "endOffsetX": -20,
     "endOffsetY": 10
+  },
+  {
+    "start": "zookeeper",
+    "end": "controller",
+    "startOffsetX": -40,
+    "startOffsetY": -25,
+    "endOffsetX": 110,
+    "endOffsetY": 50
   }
 ]

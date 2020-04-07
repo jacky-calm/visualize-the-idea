@@ -15,7 +15,7 @@
       }
     },
     "label": {
-      "text": "broker1",
+      "text": "broker0",
       "attributes": {
         "x": 24,
         "y": 8
@@ -38,7 +38,7 @@
       }
     },
     "label": {
-      "text": "broker2",
+      "text": "broker1",
       "attributes": {
         "x": 24,
         "y": 8
@@ -61,7 +61,7 @@
       }
     },
     "label": {
-      "text": "broker3",
+      "text": "broker2",
       "attributes": {
         "x": 24,
         "y": 8

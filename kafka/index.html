@@ -26,7 +26,7 @@
         // 整个group里面所有节点的坐标位置
         let translateX = data.group.transform.translateX;
         let translateY = data.group.transform.translateY;
-        let width = data.group.id.length * 11;
+        let width = data.label.text.length * 11;
         let height = 28;
         let group = container.group()
             .transform({translateX: translateX, translateY: translateY})
@@ -79,17 +79,20 @@
         let id = buildPathId(path);
         let points = svg.findOne(`#${id}`).data('points');
         return svg.circle(20).attr({cx: points[0], cy: points[1]}).fill('green')
+            .id('circle-'+id)
             .animate(2500, 100, 'now')
-            .move(points[2], points[3]-10)
-            .loop(Number.MAX_SAFE_INTEGER, false, 200);
+            .move(points[2], points[3] - 10)
+            .loop(Number.MAX_SAFE_INTEGER, false, 200)
+            // .loop(1, false, 200)
+            ;
     }
 
     SVG.on(document, 'DOMContentLoaded', function () {
-        $.getJSON("data/brokers.json?" + version, function (data) {
+        $.getJSON("data/zookeeper.json?" + version, function (data) {
             data.forEach(node => createNode(svg, node))
         });
 
-        $.getJSON("data/zookeeper.json?" + version, function (data) {
+        $.getJSON("data/brokers.json?" + version, function (data) {
             data.forEach(node => createNode(svg, node))
         });
 
@@ -100,6 +103,22 @@
         $.getJSON("data/paths.json?" + version, function (data) {
             data.forEach(value => animate(value));
         });
+
+        $("svg").find("g").attr("display", "none");
+        $("svg").find("path").attr("display", "none");
+        $("svg").find("circle").attr("display", "none");
+
+        ['zookeeper',
+            'broker1', 'broker1_zookeeper', 'circle-broker1_zookeeper','brokers-ids-1','zookeeper_brokers-ids-1','circle-zookeeper_brokers-ids-1',
+            'controller', 'zookeeper_controller', 'circle-zookeeper_controller'
+        ]
+            .forEach(function(value, index) {
+            setTimeout(
+                function () {
+                    $("#"+value).removeAttr("display");
+                }, 5*index);
+        });
+
 
     })
 </script>

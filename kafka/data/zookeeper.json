@@ -27,7 +27,7 @@
       "id": "controller",
       "transform": {
         "translateX": 350,
-        "translateY": 100
+        "translateY": 80
       }
     },
     "shape": {
@@ -49,7 +49,7 @@
     "group": {
       "id": "brokers-ids-1",
       "transform": {
-        "translateX": 700,
+        "translateX": 630,
         "translateY": 200
       }
     },
@@ -70,7 +70,7 @@
     "group": {
       "id": "brokers-ids-2",
       "transform": {
-        "translateX": 700,
+        "translateX": 630,
         "translateY": 300
       }
     },
@@ -91,7 +91,7 @@
     "group": {
       "id": "brokers-ids-3",
       "transform": {
-        "translateX": 700,
+        "translateX": 630,
         "translateY": 400
       }
     },

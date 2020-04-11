@@ -6,6 +6,7 @@
     <script src="node_modules/jquery/dist/jquery.js"></script>
     <script src="node_modules/@svgdotjs/svg.js/dist/svg.js"></script>
     <script src="node_modules/@svgdotjs/svg.draggable.js/dist/svg.draggable.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/2.0.6/velocity.min.js"></script>
 </head>
 <body>
 
@@ -51,9 +52,7 @@
         return group.draggable(); // 支持拖拽
     }
 
-    function buildPathId(path) {
-        let start = path.start;
-        let end = path.end;
+    function buildPathId(start, end) {
         return `${start}_${end}`;
     }
 
@@ -71,7 +70,7 @@
             if (path.curve != null){
                 data = `M ${startX}, ${startY} ${path.curve} ${endX}, ${endY}`;
             }
-            let id = buildPathId(path);
+            let id = buildPathId(start, endList[i]);
             container.path(data).id(id)
                 .fill('none')
                 .stroke({width: 1, color: 'blue'})
@@ -80,16 +79,48 @@
         }
     }
 
-    function animate(path) {
-        let id = buildPathId(path);
-        let points = svg.findOne(`#${id}`).data('points');
-        return svg.circle(20).attr({cx: points[0], cy: points[1]}).fill('green')
-            .id('circle-' + id)
-            .animate(2500, 100, 'now')
-            .move(points[2] - 10, points[3] - 10)
-            .loop(Number.MAX_SAFE_INTEGER, false, 200)
+    function animate(path, loop) {
+        let start = path.start;
+        let endList = path.end;
+        for (let i = 0; i < endList.length; i++) {
+            let end = endList[i];
+            let id = buildPathId(start, end);
+            let points = svg.findOne(`#${id}`).data('points');
+            svg.circle(20).attr({cx: points[0], cy: points[1]}).fill('green')
+                .id('circle-' + id)
+                .animate(2500, 100, 'now')
+                .move(points[2] - 10, points[3] - 10)
+                .loop(loop, false, 200)
+            // .loop(Number.MAX_SAFE_INTEGER, false, 200)
             // .loop(1, false, 200)
             ;
+        }
+    }
+
+    // <circle r="10" cx="510" cy="578" fill="green" id="circle-buffer-2-5_broker2-2-0"></circle>
+    // <animateMotion dur="10s" repeatCount="indefinite">
+    //         <mpath xlink:href="#path"/>
+    //         </animateMotion>
+    function createAnimate(path) {
+        let circle = $(`<circle r="10" cx="510" cy="578" fill="green" id="circle-buffer-2-5_broker2-2-0"></circle>`);
+        let animateMotion = $("<animateMotion>", {dur: "10", "repeatCount": "1"});
+        let mpath = $('<mpath xlink:href="#broker2-2-5_broker0-2-5"/>');
+        animateMotion.append(mpath);
+        // circle.append(animateMotion);
+        // $('svg').append(circle);
+        SVG(circle);
+
+        // let start = path.start;
+        // let endList = path.end;
+        // for (let i = 0; i < endList.length; i++) {
+        //     let end = endList[i];
+        //     let id = buildPathId(start, end);
+        //     let points = svg.findOne(`#${id}`).data('points');
+        //     let circle =  svg.circle(20).attr({cx: points[0], cy: points[1]}).fill('green').id('circle-' + id);
+        //     // circle.append(animateMotion);
+        // }
+
+
     }
 
     // a matrix is a group of nodes replicated from data
@@ -129,9 +160,10 @@
         }
         $.getJSON("data/producer/paths.json?" + version, function (data) {
             data.forEach(value => createPath(svg, value, marker));
+            data.forEach(value => createAnimate(value, 1));
+            // data.forEach(value => animate(value, 1));
         });
 
-        svg.findOne("#buffer-0-0")
     })
 </script>
 <input id="show_all" type="button" class="button" value="Show all" style="float: right;">

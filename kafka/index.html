@@ -88,17 +88,20 @@
             ;
     }
 
-    function createMatrix(node) {
-        let matrix = node.shape.matrix;
+    // a matrix is a group of nodes replicated from data
+    function createMatrix(container, data) {
+        let group = container.group();
+        let matrix = data.shape.matrix;
         if (matrix != null) {
             for (let i = 0; i < matrix.row.count; i++) {
+                let row = group.group().id(data.group.id.replace("{row}", i).replace("{column}", 'x'));
                 for (let j = 0; j < matrix.column.count; j++) {
-                    let nodeReplica = JSON.parse(JSON.stringify(node));
+                    let nodeReplica = JSON.parse(JSON.stringify(data));
                     nodeReplica.group.transform.translateX += nodeReplica.group.width * j + nodeReplica.shape.matrix.column.offset;
                     nodeReplica.group.transform.translateY += nodeReplica.shape.matrix.row.offset * i;
                     nodeReplica.label.text = nodeReplica.label.text.replace("{}", j);
                     nodeReplica.group.id = nodeReplica.group.id.replace("{row}", i).replace("{column}", j);
-                    createNode(svg, nodeReplica);
+                    createNode(row, nodeReplica);
                 }
             }
         }
@@ -110,14 +113,14 @@
         });
 
         $.getJSON("data/buffer.json?" + version, function (node) {
-            createMatrix(node);
+            createMatrix(svg, node);
         });
         for (let i = 0; i < 3; i++) {
             $.getJSON(`data/cluster-broker${i}.json?${version}`, function (node) {
-                createMatrix(node);
+                createMatrix(svg, node);
             });
             $.getJSON("data/cluster.json?" + version, function (node) {
-                createMatrix(node);
+                createMatrix(svg, node);
             });
         }
 

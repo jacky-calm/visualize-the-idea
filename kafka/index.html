@@ -88,29 +88,35 @@
             ;
     }
 
+    function createMatrix(node) {
+        let matrix = node.shape.matrix;
+        if (matrix != null) {
+            for (let i = 0; i < matrix.row.count; i++) {
+                for (let j = 0; j < matrix.column.count; j++) {
+                    let nodeReplica = JSON.parse(JSON.stringify(node));
+                    nodeReplica.group.transform.translateX += nodeReplica.label.width * j + nodeReplica.shape.matrix.column.offset;
+                    nodeReplica.group.transform.translateY += nodeReplica.shape.matrix.row.offset * i;
+                    nodeReplica.label.text = nodeReplica.label.text.replace("{}", j);
+                    nodeReplica.group.id = nodeReplica.group.id.replace("{row}", i).replace("{column}", j);
+                    createNode(svg, nodeReplica);
+                }
+            }
+        }
+    }
+
     SVG.on(document, 'DOMContentLoaded', function () {
         $.getJSON("data/producer.json?" + version, function (data) {
             data.forEach(node => createNode(svg, node))
         });
 
         $.getJSON("data/buffer.json?" + version, function (node) {
-            let matrix = node.shape.matrix;
-            if (matrix != null) {
-                let nodeReplica = JSON.parse(JSON.stringify(node));
-                for (let i = 0; i < matrix.row.count; i++) {
-                    for (let j = 0; j < matrix.column.count; j++) {
-                        nodeReplica = JSON.parse(JSON.stringify(node));
-                        nodeReplica.group.transform.translateX += nodeReplica.label.width * j + nodeReplica.shape.matrix.column.offset;
-                        nodeReplica.group.transform.translateY += nodeReplica.shape.matrix.row.offset*i;
-                        nodeReplica.label.text = nodeReplica.label.text.replace("{}", j);
-                        nodeReplica.group.id = nodeReplica.group.id.replace("{row}", i).replace("{column}", j);
-                        createNode(svg, nodeReplica);
-                    }
-                }
-            }
-
+            createMatrix(node);
         });
-
+        for (let i = 0; i < 3; i++) {
+            $.getJSON(`data/cluster-broker${i}.json?${version}`, function (node) {
+                createMatrix(node);
+            });
+        }
 
     })
 </script>

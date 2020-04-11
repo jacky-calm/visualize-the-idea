@@ -1,9 +1,9 @@
 {
   "group": {
-    "id": "buffer-{row}-{column}",
+    "id": "broker1-{row}-{column}",
     "transform": {
-      "translateX": 350,
-      "translateY": 150
+      "translateX": 600,
+      "translateY": 300
     }
   },
   "shape": {
@@ -15,7 +15,7 @@
     "matrix": {
       "row": {
         "count": 3,
-        "offset": 200
+        "offset": 50
       },
       "column": {
         "count": 6,

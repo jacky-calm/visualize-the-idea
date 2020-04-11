@@ -1,12 +1,12 @@
 {
   "group": {
-    "id": "broker2-{row}-{column}",
+    "id": "cluster-{row}-{column}",
     "transform": {
-      "translateX": 600,
-      "translateY": 500
+      "translateX": 588,
+      "translateY": 90
     },
-    "width": 20,
-    "height": 28
+    "width": 150,
+    "height": 150
   },
   "shape": {
     "type": "rect",
@@ -17,16 +17,16 @@
     "matrix": {
       "row": {
         "count": 3,
-        "offset": 50
+        "offset": 200
       },
       "column": {
-        "count": 6,
+        "count": 1,
         "offset": 20
       }
     }
   },
   "label": {
-    "text": "{}",
+    "text": "",
     "attributes": {
       "x": 16,
       "y": 8

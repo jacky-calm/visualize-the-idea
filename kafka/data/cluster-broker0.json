@@ -4,7 +4,9 @@
     "transform": {
       "translateX": 600,
       "translateY": 100
-    }
+    },
+    "width": 20,
+    "height": 28
   },
   "shape": {
     "type": "rect",
@@ -25,8 +27,6 @@
   },
   "label": {
     "text": "{}",
-    "width": 20,
-    "height": 50,
     "attributes": {
       "x": 16,
       "y": 8

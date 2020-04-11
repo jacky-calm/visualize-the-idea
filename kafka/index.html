@@ -29,8 +29,8 @@
         let translateY = data.group.transform.translateY;
         let label = container.text(data.label.text);
 
-        let width = data.label.width == null ? (data.label.text.length * 8 + 10) : parseInt(data.label.width);
-        let height = 28;
+        let width = data.group.width == null ? (data.label.text.length * 8 + 10) : parseInt(data.group.width);
+        let height = data.group.height == null ? 28 : parseInt(data.group.height);
         let group = container.group()
             .transform({translateX: translateX, translateY: translateY})
             .id(data.group.id)
@@ -94,7 +94,7 @@
             for (let i = 0; i < matrix.row.count; i++) {
                 for (let j = 0; j < matrix.column.count; j++) {
                     let nodeReplica = JSON.parse(JSON.stringify(node));
-                    nodeReplica.group.transform.translateX += nodeReplica.label.width * j + nodeReplica.shape.matrix.column.offset;
+                    nodeReplica.group.transform.translateX += nodeReplica.group.width * j + nodeReplica.shape.matrix.column.offset;
                     nodeReplica.group.transform.translateY += nodeReplica.shape.matrix.row.offset * i;
                     nodeReplica.label.text = nodeReplica.label.text.replace("{}", j);
                     nodeReplica.group.id = nodeReplica.group.id.replace("{row}", i).replace("{column}", j);
@@ -114,6 +114,9 @@
         });
         for (let i = 0; i < 3; i++) {
             $.getJSON(`data/cluster-broker${i}.json?${version}`, function (node) {
+                createMatrix(node);
+            });
+            $.getJSON("data/cluster.json?" + version, function (node) {
                 createMatrix(node);
             });
         }

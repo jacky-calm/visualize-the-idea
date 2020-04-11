@@ -27,7 +27,9 @@
         // 整个group里面所有节点的坐标位置
         let translateX = data.group.transform.translateX;
         let translateY = data.group.transform.translateY;
-        let width = data.label.text.length * 8 + 10;
+        let label = container.text(data.label.text);
+
+        let width = data.label.width == null ? (data.label.text.length * 8 + 10) : parseInt(data.label.width);
         let height = 28;
         let group = container.group()
             .transform({translateX: translateX, translateY: translateY})
@@ -44,10 +46,8 @@
         let rect = container[data.shape.type](width, height).attr(attributes);
         group.add(rect);
 
-        let label = container.text(data.label.text);
         label.attr(data.label.attributes);
         group.add(label);
-
         return group.draggable(); // 支持拖拽
     }
 
@@ -89,112 +89,25 @@
     }
 
     SVG.on(document, 'DOMContentLoaded', function () {
-        $.getJSON("data/zookeeper.json?" + version, function (data) {
+        $.getJSON("data/producer.json?" + version, function (data) {
             data.forEach(node => createNode(svg, node))
         });
 
-        $.getJSON("data/brokers.json?" + version, function (data) {
-            data.forEach(node => createNode(svg, node))
-        });
-
-        $.getJSON("data/paths.json?" + version, function (data) {
-            data.forEach(value => createPath(svg, value, marker));
-        });
-
-        $.getJSON("data/paths.json?" + version, function (data) {
-            data.forEach(value => animate(value));
-        });
-
-        $("svg").find("g").attr("display", "none");
-        $("svg").find("path").attr("display", "none");
-        $("svg").find("circle").attr("display", "none");
-
-        $("#circle-broker2_zookeeper").attr("fill", "pink");
-        $("#circle-zookeeper_brokers-ids-2").attr("fill", "pink");
-
-        $("#circle-broker3_zookeeper").attr("fill", "red");
-        $("#circle-zookeeper_brokers-ids-3").attr("fill", "red");
-
-        // ['zookeeper',
-        //     'broker1', 'broker1_zookeeper', 'circle-broker1_zookeeper', 'brokers-ids-1', 'zookeeper_brokers-ids-1', 'circle-zookeeper_brokers-ids-1',
-        //     'controller', 'zookeeper_controller', 'circle-zookeeper_controller',
-        //     'broker2', 'broker2_zookeeper', 'circle-broker2_zookeeper', 'brokers-ids-2', 'zookeeper_brokers-ids-2', 'circle-zookeeper_brokers-ids-2',
-        //     'broker3', 'broker3_zookeeper', 'circle-broker3_zookeeper', 'brokers-ids-3', 'zookeeper_brokers-ids-3', 'circle-zookeeper_brokers-ids-3'
-        // ]
-        //     .forEach(function (value, index) {
-        //         setTimeout(
-        //             function () {
-        //                 $("#" + value).removeAttr("display");
-        //             }, 800 * index);
-        //     });
-        //
-        // setTimeout(
-        //     function () {
-        //         ['broker1', 'broker1_zookeeper', 'circle-broker1_zookeeper']
-        //             .forEach(function (value, index) {
-        //                 $("#" + value).attr("display", "none");
-        //             });
-        //     }, 20000);
-        //
-        // setTimeout(
-        //     function () {
-        //         ['brokers-ids-1', 'zookeeper_brokers-ids-1', 'circle-zookeeper_brokers-ids-1']
-        //             .forEach(function (value, index) {
-        //                 $("#" + value).attr("display", "none");
-        //             });
-        //         $("#circle-zookeeper_controller").attr("fill", "pink");
-        //         $('#controller').find('tspan').html('/controller (broker1)')
-        //     }, 22000);
-
-        let show_flow = ['zookeeper',
-            'broker1', 'broker1_zookeeper', 'circle-broker1_zookeeper', 'brokers-ids-1', 'zookeeper_brokers-ids-1', 'circle-zookeeper_brokers-ids-1',
-            'controller', 'zookeeper_controller', 'circle-zookeeper_controller',
-            'broker2', 'broker2_zookeeper', 'circle-broker2_zookeeper', 'brokers-ids-2', 'zookeeper_brokers-ids-2', 'circle-zookeeper_brokers-ids-2',
-            'broker3', 'broker3_zookeeper', 'circle-broker3_zookeeper', 'brokers-ids-3', 'zookeeper_brokers-ids-3', 'circle-zookeeper_brokers-ids-3'
-        ].concat(['broker1', 'broker1_zookeeper', 'circle-broker1_zookeeper'])
-            .concat(['brokers-ids-1', 'zookeeper_brokers-ids-1', 'circle-zookeeper_brokers-ids-1']);
-        let next = 0;
-        $("#show_next").click(function () {
-            let id = show_flow[next++];
-            console.log(id);
-            $("#" + id).removeAttr("display");
-        });
-
-
-        $("#hide_broker0").click(function () {
-            ['broker1', 'broker1_zookeeper', 'circle-broker1_zookeeper']
-                .forEach(function (value, index) {
-                    $("#" + value).attr("display", "none");
-                });
-        });
-
-        $("#hide_brokerid0").click(function () {
-            ['brokers-ids-1', 'zookeeper_brokers-ids-1', 'circle-zookeeper_brokers-ids-1']
-                .forEach(function (value, index) {
-                    $("#" + value).attr("display", "none");
-                });
-        });
-
-        $("#hide_controller").click(function () {
-            ['controller', 'zookeeper_controller', 'circle-zookeeper_controller']
-                .forEach(function (value, index) {
-                    $("#" + value).attr("display", "none");
-                });
-        });
-
-        $("#change_controller").click(function () {
-            ['controller', 'zookeeper_controller', 'circle-zookeeper_controller']
-                .forEach(function (value, index) {
-                    $("#" + value).removeAttr("display");
-                });
-            $("#circle-zookeeper_controller").attr("fill", "pink");
-            $('#controller').find('tspan').html('/controller (broker1)')
-        });
-
-        $("#show_all").click(function () {
-            $("svg").find("g").removeAttr("display");
-            $("svg").find("path").removeAttr("display");
-            $("svg").find("circle").removeAttr("display");
+        $.getJSON("data/buffer.json?" + version, function (node) {
+            let matrix = node.shape.matrix;
+            if (matrix != null) {
+                let nodeReplica = JSON.parse(JSON.stringify(node));
+                for (let i = 0; i < matrix.row.count; i++) {
+                    for (let j = 0; j < matrix.column.count; j++) {
+                        nodeReplica = JSON.parse(JSON.stringify(node));
+                        nodeReplica.group.transform.translateX += nodeReplica.label.width * j + nodeReplica.shape.matrix.column.offset;
+                        nodeReplica.group.transform.translateY += nodeReplica.shape.matrix.row.offset*i;
+                        nodeReplica.label.text = nodeReplica.label.text.replace("{}", j);
+                        nodeReplica.group.id = nodeReplica.group.id.replace("{row}", i).replace("{column}", j);
+                        createNode(svg, nodeReplica);
+                    }
+                }
+            }
 
         });
 
@@ -202,10 +115,5 @@
     })
 </script>
 <input id="show_all" type="button" class="button" value="Show all" style="float: right;">
-<input id="change_controller" type="button" class="button" value="Change controller 1" style="float: right;">
-<input id="hide_controller" type="button" class="button" value="Hide controller 0" style="float: right;">
-<input id="hide_brokerid0" type="button" class="button" value="Hide Broker ID 0" style="float: right;">
-<input id="hide_broker0" type="button" class="button" value="Hide Broker0" style="float: right;">
-<input id="show_next" type="button" class="button" value="Show Next" style="float: right;">
 </body>
 </html>

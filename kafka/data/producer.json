@@ -1,0 +1,25 @@
+[
+  {
+    "group": {
+      "id": "producer",
+      "transform": {
+        "translateX": 170,
+        "translateY": 250
+      }
+    },
+    "shape": {
+      "type": "rect",
+      "attributes": {
+        "x": 10,
+        "y": 10
+      }
+    },
+    "label": {
+      "text": "producer",
+      "attributes": {
+        "x": 20,
+        "y": 8
+      }
+    }
+  }
+]

@@ -1,0 +1,35 @@
+{
+  "group": {
+    "id": "buffer-{row}-{column}",
+    "transform": {
+      "translateX": 350,
+      "translateY": 150
+    }
+  },
+  "shape": {
+    "type": "rect",
+    "attributes": {
+      "x": 10,
+      "y": 10
+    },
+    "matrix": {
+      "row": {
+        "count": 3,
+        "offset": 100
+      },
+      "column": {
+        "count": 6,
+        "offset": 20
+      }
+    }
+  },
+  "label": {
+    "text": "{}",
+    "width": 20,
+    "height": 50,
+    "attributes": {
+      "x": 16,
+      "y": 8
+    }
+  }
+}

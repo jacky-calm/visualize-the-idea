@@ -177,7 +177,27 @@
                 }
             });
         };
-        append(5, send.bind(null, replicate));
+        setTimeout(function () {
+            for (let i = 5; i > -1; i--) {
+                snap.select(`#broker0-0-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
+                snap.select(`#broker0-2-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
+                snap.select(`#broker1-1-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
+                snap.select(`#broker1-2-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
+                snap.select(`#broker2-0-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
+                snap.select(`#broker2-1-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
+            }
+            snap.select(`#producer text`).attr({text: `producer`, x: 16, y: 28});
+        }, 1000);
+
+        function play(){
+            append(5, send.bind(null, replicate));
+        }
+
+        $("#show_all").click(function () {
+            snap.selectAll('text').attr({text: ``, x: 16, y: 28});
+            snap.select(`#producer text`).attr({text: `producer`, x: 16, y: 28});
+            play();
+        });
     });
 </script>
 <input id="show_all" type="button" class="button" value="Show all" style="float: right;">

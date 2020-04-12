@@ -143,18 +143,42 @@
             data.forEach(value => createPath(svg, value, marker));
         });
 
-        function send(index) {
-            if (index<0) return;
+        function append(index, cb) {
+            if (index < 0) {
+                return cb();
+            }
             animate(`producer_buffer-0-0`, 1, function (callback) {
                 snap.select(`#buffer-0-${index} text`).attr({text: `${index}`, x: 16, y: 28});
-                index--;
-                callback(index);
-            }.bind(null, send));
+                if (cb != null) callback();
+            }.bind(null, append.bind(null, index - 1, cb)));
         }
-        send(5);
 
+        let send = function (replicate) {
+            console.log('buffer is full. send to broker...');
+            animate(`buffer-0-5_broker1-0-0`, 1, function () {
+                for (let i = 5; i > -1; i--) {
+                    snap.select(`#buffer-0-${i} text`).attr({text: ``, x: 16, y: 28});
+                    snap.select(`#broker1-0-${i} text`).attr({text: `${i}`, x: 16, y: 28});
+                }
+                replicate();
+            });
+        };
 
-    })
+        let replicate = function () {
+            console.log('leader got new message. replicate to followers...');
+            animate(`broker1-0-5_broker0-0-5`, 1, function () {
+                for (let i = 5; i > -1; i--) {
+                    snap.select(`#broker0-0-${i} text`).attr({text: `${i}`, x: 16, y: 28});
+                }
+            });
+            animate(`broker1-0-5_broker2-0-5`, 1, function () {
+                for (let i = 5; i > -1; i--) {
+                    snap.select(`#broker2-0-${i} text`).attr({text: `${i}`, x: 16, y: 28});
+                }
+            });
+        };
+        append(5, send.bind(null, replicate));
+    });
 </script>
 <input id="show_all" type="button" class="button" value="Show all" style="float: right;">
 </body>

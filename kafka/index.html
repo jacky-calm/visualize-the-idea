@@ -144,13 +144,14 @@
         });
 
         function append(index, cb) {
-            if (index < 0) {
+            if (index > 5) {
                 return cb();
             }
+            console.log(`producer appends new message ${index}`);
             animate(`producer_buffer-0-0`, 1, function (callback) {
                 snap.select(`#buffer-0-${index} text`).attr({text: `${index}`, x: 16, y: 28});
                 if (cb != null) callback();
-            }.bind(null, append.bind(null, index - 1, cb)));
+            }.bind(null, append.bind(null, index + 1, cb)));
         }
 
         let send = function (replicate) {
@@ -165,17 +166,24 @@
         };
 
         let replicate = function () {
-            console.log('leader got new message. replicate to followers...');
-            animate(`broker1-0-5_broker0-0-5`, 1, function () {
-                for (let i = 5; i > -1; i--) {
-                    snap.select(`#broker0-0-${i} text`).attr({text: `${i}`, x: 16, y: 28});
-                }
-            });
-            animate(`broker1-0-5_broker2-0-5`, 1, function () {
-                for (let i = 5; i > -1; i--) {
-                    snap.select(`#broker2-0-${i} text`).attr({text: `${i}`, x: 16, y: 28});
-                }
-            });
+            setTimeout(function () {
+                console.log('leader got new message. replicate to follower0...');
+                animate(`broker1-0-5_broker0-0-5`, 1, function () {
+                    for (let i = 5; i > -1; i--) {
+                        snap.select(`#broker0-0-${i} text`).attr({text: `${i}`, x: 16, y: 28});
+                    }
+                });
+            }, 500);
+            setTimeout(function () {
+                console.log('leader got new message. replicate to follower1...');
+                animate(`broker1-0-5_broker2-0-5`, 1, function () {
+                    for (let i = 5; i > -1; i--) {
+                        snap.select(`#broker2-0-${i} text`).attr({text: `${i}`, x: 16, y: 28});
+                    }
+                });
+            }, 1000);
+
+
         };
         setTimeout(function () {
             for (let i = 5; i > -1; i--) {
@@ -190,7 +198,7 @@
         }, 1000);
 
         function play(){
-            append(5, send.bind(null, replicate));
+            append(0, send.bind(null, replicate));
         }
 
         $("#show_all").click(function () {

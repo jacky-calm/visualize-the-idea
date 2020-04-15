@@ -1,0 +1,35 @@
+{
+  "group": {
+    "id": "cluster-{row}-{column}",
+    "transform": {
+      "translateX": 200,
+      "translateY": 300
+    },
+    "width": 70,
+    "height": 30
+  },
+  "shape": {
+    "type": "rect",
+    "attributes": {
+      "x": 10,
+      "y": 10
+    },
+    "matrix": {
+      "row": {
+        "count": 1,
+        "offset": 0
+      },
+      "column": {
+        "count": 3,
+        "offset": 100
+      }
+    }
+  },
+  "label": {
+    "text": "",
+    "attributes": {
+      "x": 16,
+      "y": 8
+    }
+  }
+}

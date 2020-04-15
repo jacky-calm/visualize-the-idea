@@ -15,7 +15,7 @@
 
 <script>
     // 定义svg对象, 在body里面添加一个svg
-    let svg = SVG().addTo('body').attr({width: 1000, height: 800, id: 'svg'});
+    let svg = SVG().addTo('body').attr({width: 800, height: 800, id: 'svg'});
     var snap = Snap("#svg");
     // marker: arrow head
     let marker = svg.marker(13, 13, function (add) {
@@ -101,7 +101,7 @@
             stroke: "green",
             strokeWidth: 2
         });
-        circle.drawAtPath(move, 1000, {callback: callback});
+        circle.drawAtPath(move, Math.random() * 1000, {callback: callback});
     }
 
     // a matrix is a group of nodes replicated from data
@@ -113,7 +113,7 @@
                 let row = group.group().id(data.group.id.replace("{row}", i).replace("{column}", 'x'));
                 for (let j = 0; j < matrix.column.count; j++) {
                     let nodeReplica = JSON.parse(JSON.stringify(data));
-                    nodeReplica.group.transform.translateX += nodeReplica.group.width * j + nodeReplica.shape.matrix.column.offset;
+                    nodeReplica.group.transform.translateX += nodeReplica.shape.matrix.column.offset * j;
                     nodeReplica.group.transform.translateY += nodeReplica.shape.matrix.row.offset * i;
                     nodeReplica.label.text = nodeReplica.label.text.replace("{}", j);
                     nodeReplica.group.id = nodeReplica.group.id.replace("{row}", i).replace("{column}", j);
@@ -124,90 +124,48 @@
     }
 
     SVG.on(document, 'DOMContentLoaded', function () {
-        $.getJSON("data/producer/producer.json?" + version, function (data) {
-            data.forEach(node => createNode(svg, node))
-        });
-
-        $.getJSON("data/producer/buffer.json?" + version, function (node) {
+        $.getJSON("data/meet/producer.json?" + version, function (node) {
             createMatrix(svg, node);
         });
-        for (let i = 0; i < 3; i++) {
-            $.getJSON(`data/producer/cluster-broker${i}.json?${version}`, function (node) {
-                createMatrix(svg, node);
-            });
-            $.getJSON("data/producer/cluster.json?" + version, function (node) {
-                createMatrix(svg, node);
-            });
-        }
-        $.getJSON("data/producer/paths.json?" + version, function (data) {
-            data.forEach(value => createPath(svg, value, marker));
+        // $.getJSON("data/meet/kafka.json?" + version, function (node) {
+        //     createMatrix(svg, node);
+        // });
+        $.getJSON("data/meet/consumer.json?" + version, function (node) {
+            createMatrix(svg, node);
         });
 
-        function append(index, cb) {
-            if (index > 5) {
-                return cb();
-            }
-            console.log(`producer appends new message ${index}`);
-            animate(`producer_buffer-0-0`, 1, function (callback) {
-                snap.select(`#buffer-0-${index} text`).attr({text: `${index}`, x: 16, y: 28});
-                if (cb != null) callback();
-            }.bind(null, append.bind(null, index + 1, cb)));
-        }
+        $("#show_p2p").click(function () {
+            snap.selectAll('rect').attr({display: ''});
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 5; j++) {
+                    let path = {
+                        "start": `producer-0-${i}`,
+                        "end": [
+                            `consumer-0-${j}`
+                        ],
+                        "startOffsetX": -30,
+                        "startOffsetY": 20,
+                        "endOffsetX": 40,
+                        "endOffsetY": 0
+                    }
+                    createPath(svg, path, marker);
+                    animate(`producer-0-${i}_consumer-0-${j}`, 1, function () {
 
-        let send = function (replicate) {
-            console.log('buffer is full. send to broker...');
-            animate(`buffer-0-5_broker1-0-0`, 1, function () {
-                for (let i = 5; i > -1; i--) {
-                    snap.select(`#buffer-0-${i} text`).attr({text: ``, x: 16, y: 28});
-                    snap.select(`#broker1-0-${i} text`).attr({text: `${i}`, x: 16, y: 28});
+                    });
                 }
-                replicate();
-            });
-        };
-
-        let replicate = function () {
-            setTimeout(function () {
-                console.log('leader got new message. replicate to follower0...');
-                animate(`broker1-0-5_broker0-0-5`, 1, function () {
-                    for (let i = 5; i > -1; i--) {
-                        snap.select(`#broker0-0-${i} text`).attr({text: `${i}`, x: 16, y: 28});
-                    }
-                });
-            }, 500);
-            setTimeout(function () {
-                console.log('leader got new message. replicate to follower1...');
-                animate(`broker1-0-5_broker2-0-5`, 1, function () {
-                    for (let i = 5; i > -1; i--) {
-                        snap.select(`#broker2-0-${i} text`).attr({text: `${i}`, x: 16, y: 28});
-                    }
-                });
-            }, 1000);
-
-
-        };
-        setTimeout(function () {
-            for (let i = 5; i > -1; i--) {
-                snap.select(`#broker0-0-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
-                snap.select(`#broker0-2-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
-                snap.select(`#broker1-1-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
-                snap.select(`#broker1-2-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
-                snap.select(`#broker2-0-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
-                snap.select(`#broker2-1-${i} rect`).attr({text: `${i}`, x: 10, y: 10, "stroke-dasharray": "5,5"});
             }
-            snap.select(`#producer text`).attr({text: `producer`, x: 16, y: 28});
-        }, 1000);
 
-        function play(){
-            append(0, send.bind(null, replicate));
-        }
-
-        $("#show_all").click(function () {
-            snap.selectAll('text').attr({text: ``, x: 16, y: 28});
-            snap.select(`#producer text`).attr({text: `producer`, x: 16, y: 28});
-            play();
+        });
+        $("#hide_all").click(function () {
+            snap.selectAll('rect').attr({display: 'none'});
+        });
+        $("#next").click(function () {
+            snap.selectAll('rect').attr({display: 'none'});
         });
     });
 </script>
-<input id="show_all" type="button" class="button" value="Show all" style="float: right;">
+<input id="next" type="button" class="button" value="Next" style="float: right;">
+<input id="show_p2p" type="button" class="button" value="Show P2P" style="float: right;">
+<input id="hide_all" type="button" class="button" value="Hide all" style="float: right;">
 </body>
 </html>

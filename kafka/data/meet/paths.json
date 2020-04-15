@@ -1,0 +1,77 @@
+[
+  {
+    "start": "producer",
+    "end": [
+      "buffer-0-0",
+      "buffer-1-0",
+      "buffer-2-0"
+    ],
+    "startOffsetX": 20,
+    "startOffsetY": 0,
+    "endOffsetX": -10,
+    "endOffsetY": 25
+  },
+  {
+    "start": "buffer-0-5",
+    "end": [
+      "broker1-0-0"
+    ],
+    "startOffsetX": 20,
+    "startOffsetY": 0,
+    "endOffsetX": 0,
+    "endOffsetY": 15
+  },
+  {
+    "start": "buffer-1-5",
+    "end": [
+      "broker0-1-0"
+    ],
+    "startOffsetX": 20,
+    "startOffsetY": 0,
+    "endOffsetX": 0,
+    "endOffsetY": 30
+  },
+  {
+    "start": "buffer-2-5",
+    "end": [
+      "broker2-2-0"
+    ],
+    "startOffsetX": 20,
+    "startOffsetY": 0,
+    "endOffsetX": 0,
+    "endOffsetY": 20
+  },
+  {
+    "start": "broker1-0-5",
+    "end": [
+      "broker0-0-5", "broker2-0-5"
+    ],
+    "startOffsetX": 20,
+    "startOffsetY": 0,
+    "endOffsetX": 40,
+    "endOffsetY": 30,
+    "curve": "Q900,250"
+  },
+  {
+    "start": "broker0-1-5",
+    "end": [
+      "broker1-1-5", "broker2-1-5"
+    ],
+    "startOffsetX": 20,
+    "startOffsetY": 0,
+    "endOffsetX": 40,
+    "endOffsetY": 30,
+    "curve": "Q950,400"
+  },
+  {
+    "start": "broker2-2-5",
+    "end": [
+      "broker1-2-5", "broker0-2-5"
+    ],
+    "startOffsetX": 20,
+    "startOffsetY": 0,
+    "endOffsetX": 40,
+    "endOffsetY": 30,
+    "curve": "Q900,500"
+  }
+]

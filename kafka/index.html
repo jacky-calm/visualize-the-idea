@@ -90,18 +90,29 @@
         }
     }
 
+    // function animate(pathId, loop, callback) {
+    //     let d = $(`#${pathId}`).data('d');
+    //     let move = snap.path(d).attr({fill: "none", stroke: "red", opacity: "1"});
+    //     let points = $(`#${pathId}`).data('points');
+    //     let circle = snap.circle(points[0], points[1], 10);
+    //     circle.attr({
+    //         fill: 'green',
+    //         id: 'circle-' + pathId,
+    //         stroke: "green",
+    //         strokeWidth: 2
+    //     });
+    //     circle.drawAtPath(move, Math.random() * 1000, {callback: callback});
+    // }
+
     function animate(pathId, loop, callback) {
-        let d = $(`#${pathId}`).data('d');
-        let move = snap.path(d).attr({fill: "none", stroke: "red", opacity: "1"});
-        let points = $(`#${pathId}`).data('points');
-        let circle = snap.circle(points[0], points[1], 10);
-        circle.attr({
-            fill: 'green',
-            id: 'circle-' + pathId,
-            stroke: "green",
-            strokeWidth: 2
-        });
-        circle.drawAtPath(move, Math.random() * 1000, {callback: callback});
+        let points = svg.findOne(`#${pathId}`).data('points');
+        return svg.circle(20).attr({cx: points[0], cy: points[1]}).fill('green')
+            .id('circle-' + pathId)
+            .animate(2500, 100, 'now')
+            .move(points[2] - 10, points[3] - 10)
+            .loop(Number.MAX_SAFE_INTEGER, false, Math.random() * 2000)
+            // .loop(1, false, 200)
+            ;
     }
 
     // a matrix is a group of nodes replicated from data

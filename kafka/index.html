@@ -128,15 +128,15 @@
         $.getJSON("data/meet/producer.json?" + version, function (node) {
             createMatrix(svg, node);
         });
-        // $.getJSON("data/meet/kafka.json?" + version, function (node) {
-        //     createMatrix(svg, node);
-        // });
+        $.getJSON("data/meet/kafka.json?" + version, function (node) {
+            createMatrix(svg, node);
+        });
         $.getJSON("data/meet/consumer.json?" + version, function (node) {
             createMatrix(svg, node);
         });
 
-        $("#show_p2p").click(function () {
-            snap.selectAll('rect').attr({display: ''});
+        function createP2P() {
+            let p2p = svg.group().id('path-p2p');
             for (let i = 0; i < 5; i++) {
                 for (let j = 0; j < 5; j++) {
                     let path = {
@@ -149,11 +149,43 @@
                         "endOffsetX": 40,
                         "endOffsetY": -10
                     }
-                    createPath(svg, path, marker);
+                    createPath(p2p, path, marker);
                 }
             }
-            snap.selectAll('.leaf').attr({display: ''});
-        });
+        }
+        function createKafka() {
+            let kafka = svg.group().id('path-kafka');
+            for (let i = 0; i < 5; i++) {
+                for (let j = 0; j < 3; j++) {
+                    let path = {
+                        "start": `producer-0-${i}`,
+                        "end": [
+                            `cluster-0-${j}`
+                        ],
+                        "startOffsetX": -30,
+                        "startOffsetY": 20,
+                        "endOffsetX": 40,
+                        "endOffsetY": -10
+                    };
+                    createPath(kafka, path, marker);
+                }
+            }
+            for (let i = 0; i < 3; i++) {
+                for (let j = 0; j < 5; j++) {
+                    let path = {
+                        "start": `cluster-0-${i}`,
+                        "end": [
+                            `consumer-0-${j}`
+                        ],
+                        "startOffsetX": -30,
+                        "startOffsetY": 20,
+                        "endOffsetX": 40,
+                        "endOffsetY": -10
+                    };
+                    createPath(kafka, path, marker);
+                }
+            }
+        }
 
         function show_data_flow(from, to) {
             snap.select(`#${from}`).attr({display: ''});
@@ -184,14 +216,36 @@
             }
         });
         $("#hide_all").click(function () {
-            snap.selectAll('.leaf').attr({display: 'none'});
+            snap.select('#path-p2p').attr({display: 'none'});
+            snap.select('#path-kafka').attr({display: 'none'});
+            snap.select('#producer-0-x').attr({display: 'none'});
+            snap.select('#cluster-0-x').attr({display: 'none'});
+            snap.select('#consumer-0-x').attr({display: 'none'});
             stepIndex = 0;
         });
-
+        $("#show_p2p").click(function () {
+            snap.select('#path-kafka').attr({display: 'none'});
+            snap.select('#path-p2p').attr({display: ''});
+            snap.select('#producer-0-x').attr({display: ''});
+            snap.select('#cluster-0-x').attr({display: 'none'});
+            snap.select('#consumer-0-x').attr({display: ''});
+        });
+        $("#show_kafka").click(function () {
+            snap.select('#path-p2p').attr({display: 'none'});
+            snap.select('#path-kafka').attr({display: ''});
+            snap.select('#producer-0-x').attr({display: ''});
+            snap.select('#cluster-0-x').attr({display: ''});
+            snap.select('#consumer-0-x').attr({display: ''});
+        });
+        setTimeout(function () {
+            createP2P();
+            createKafka();
+        }, 500);
     });
 </script>
 <input id="next" type="button" class="button" value="Next" style="float: right;">
 <input id="show_p2p" type="button" class="button" value="Show P2P" style="float: right;">
+<input id="show_kafka" type="button" class="button" value="Show Kafka" style="float: right;">
 <input id="hide_all" type="button" class="button" value="Hide all" style="float: right;">
 </body>
 </html>

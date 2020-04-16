@@ -39,6 +39,7 @@
         let height = data.group.height == null ? 28 : parseInt(data.group.height);
         let group = container.group()
             .transform({translateX: translateX, translateY: translateY})
+            .addClass('leaf')
             .id(data.group.id)
             .data('leftTopX', translateX)
             .data('leftTopY', translateY)
@@ -75,44 +76,33 @@
         return {startX, startY, endX, endY, data};
     }
 
-    function createPath(container, path, marker) {
-        let start = path.start;
-        let endList = path.end;
-        for (let i = 0; i < endList.length; i++) {
-            let {startX, startY, endX, endY, data} = buildPath(start, endList, i, path);
-            let id = buildPathId(start, endList[i]);
-            container.path(data).id(id)
-                .fill('none')
-                .stroke({width: 1, color: 'blue'})
-                .marker('end', marker)
-                .data('points', [startX, startY, endX, endY])
-                .data('d', data);
-        }
-    }
-
-    // function animate(pathId, loop, callback) {
-    //     let d = $(`#${pathId}`).data('d');
-    //     let move = snap.path(d).attr({fill: "none", stroke: "red", opacity: "1"});
-    //     let points = $(`#${pathId}`).data('points');
-    //     let circle = snap.circle(points[0], points[1], 10);
-    //     circle.attr({
-    //         fill: 'green',
-    //         id: 'circle-' + pathId,
-    //         stroke: "green",
-    //         strokeWidth: 2
-    //     });
-    //     circle.drawAtPath(move, Math.random() * 1000, {callback: callback});
-    // }
-
-    function animate(pathId, loop, callback) {
+    function animate(container, pathId, loop, callback) {
         let points = svg.findOne(`#${pathId}`).data('points');
-        return svg.circle(20).attr({cx: points[0], cy: points[1]}).fill('green')
+        container.circle(20).attr({cx: points[0], cy: points[1]}).fill('green')
             .id('circle-' + pathId)
             .animate(2500, 100, 'now')
             .move(points[2] - 10, points[3] - 10)
             .loop(Number.MAX_SAFE_INTEGER, false, Math.random() * 2000)
             // .loop(1, false, 200)
             ;
+    }
+
+    function createPath(container, path, marker) {
+        let start = path.start;
+        let endList = path.end;
+        for (let i = 0; i < endList.length; i++) {
+            let {startX, startY, endX, endY, data} = buildPath(start, endList, i, path);
+            let id = buildPathId(start, endList[i]);
+            let pathId = `${start}_${endList[i]}`;
+            let group = container.group().id(`data-flow-${pathId}`).addClass('leaf');
+            group.path(data).id(id)
+                .fill('none')
+                .stroke({width: 1, color: 'blue'})
+                .marker('end', marker)
+                .data('points', [startX, startY, endX, endY])
+                .data('d', data);
+            animate(group, pathId);
+        }
     }
 
     // a matrix is a group of nodes replicated from data
@@ -157,21 +147,26 @@
                         "startOffsetX": -30,
                         "startOffsetY": 20,
                         "endOffsetX": 40,
-                        "endOffsetY": 0
+                        "endOffsetY": -10
                     }
                     createPath(svg, path, marker);
-                    animate(`producer-0-${i}_consumer-0-${j}`, 1, function () {
-
-                    });
                 }
             }
-
+            snap.selectAll('.leaf').attr({display: ''});
         });
         $("#hide_all").click(function () {
-            snap.selectAll('rect').attr({display: 'none'});
+            snap.selectAll('.leaf').attr({display: 'none'});
         });
+
+        function show_data_flow(from, to) {
+            snap.select(`#${from}`).attr({display: ''});
+            snap.select(`#${to}`).attr({display: ''});
+            snap.select(`#data-flow-${from}_${to}`).attr({display: ''});
+        }
+
         $("#next").click(function () {
-            snap.selectAll('rect').attr({display: 'none'});
+            show_data_flow(`producer-0-0`, `consumer-0-0`);
+
         });
     });
 </script>

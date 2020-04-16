@@ -263,6 +263,20 @@
         setTimeout(function () {
             createP2P();
             createKafka();
+            snap.select(`#producer-0-0 text`).attr({text: `文章`, x: 26, y: 28});
+            snap.select(`#producer-0-1 text`).attr({text: `私信`, x: 26, y: 28});
+            snap.select(`#producer-0-2 text`).attr({text: `主页`, x: 26, y: 28});
+            snap.select(`#producer-0-3 text`).attr({text: `评论`, x: 26, y: 28});
+            snap.select(`#producer-0-4 text`).attr({text: `视频`, x: 26, y: 28});
+            snap.select(`#cluster-0-0 text`).attr({text: `日志`, x: 26, y: 28});
+            snap.select(`#cluster-0-1 text`).attr({text: `性能`, x: 26, y: 28});
+            snap.select(`#cluster-0-2 text`).attr({text: `点赞`, x: 26, y: 28});
+
+            snap.select(`#consumer-0-0 text`).attr({text: `推荐`, x: 26, y: 28});
+            snap.select(`#consumer-0-1 text`).attr({text: `分析`, x: 26, y: 28});
+            snap.select(`#consumer-0-2 text`).attr({text: `监控`, x: 26, y: 28});
+            snap.select(`#consumer-0-3 text`).attr({text: `审核`, x: 26, y: 28});
+            snap.select(`#consumer-0-4 text`).attr({text: `评价`, x: 26, y: 28});
         }, 500);
     });
 </script>

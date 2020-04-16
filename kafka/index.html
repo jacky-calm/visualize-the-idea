@@ -83,8 +83,8 @@
             .animate(2500, 100, 'now')
             .move(points[2] - 10, points[3] - 10)
             .loop(Number.MAX_SAFE_INTEGER, false, Math.random() * 2000)
-            // .loop(1, false, 200)
-            ;
+        // .loop(1, false, 200)
+        ;
     }
 
     function createPath(container, path, marker) {
@@ -153,6 +153,7 @@
                 }
             }
         }
+
         function createKafka() {
             let kafka = svg.group().id('path-kafka');
             for (let i = 0; i < 5; i++) {
@@ -187,33 +188,44 @@
             }
         }
 
-        function show_data_flow(from, to) {
-            snap.select(`#${from}`).attr({display: ''});
-            snap.select(`#${to}`).attr({display: ''});
-            snap.select(`#data-flow-${from}_${to}`).attr({display: ''});
+        function show_data_flow(froms, tos) {
+            for (let i = 0; i < froms.length; i++) {
+                for (let j = 0; j < tos.length; j++) {
+                    let from = froms[i];
+                    let to = tos[j];
+                    snap.select(`#${from}`).attr({display: ''});
+                    snap.select(`#${to}`).attr({display: ''});
+                    snap.select(`#data-flow-${from}_${to}`).attr({display: ''});
+                }
+            }
+        }
+
+        function hideLeaves() {
+            snap.selectAll('.leaf').attr({display: 'none'});
         }
         let steps = [
             {
-                from:['producer-0-0'],
-                to:[`consumer-0-0`]
+                actions: [showP2P, hideLeaves]
             },
             {
-                from:['producer-0-0'],
-                to:[`consumer-0-1`]
+                actions: [show_data_flow.bind(null, ['producer-0-0'], [`consumer-0-0`])]
             },
             {
-                from:['producer-0-0'],
-                to:[`consumer-0-2`, `consumer-0-3`, `consumer-0-4`]
+                actions: [show_data_flow.bind(null, ['producer-0-0'], [`consumer-0-1`])]
+            },
+            {
+                actions: [show_data_flow.bind(null, ['producer-0-0'], [`consumer-0-2`, `consumer-0-3`, `consumer-0-4`])]
             }
         ]
         let stepIndex = 0;
+
         $("#next").click(function () {
             let step = steps[stepIndex++];
-            for (let i = 0; i < step.from.length; i++) {
-                for (let j = 0; j < step.to.length; j++) {
-                    show_data_flow(step.from[i], step.to[j]);
-                }
+            for (let i = 0; i < step.actions.length; i++) {
+                let action = step.actions[i];
+                action();
             }
+
         });
         $("#hide_all").click(function () {
             snap.select('#path-p2p').attr({display: 'none'});
@@ -223,19 +235,30 @@
             snap.select('#consumer-0-x').attr({display: 'none'});
             stepIndex = 0;
         });
-        $("#show_p2p").click(function () {
+
+        function showP2P() {
+            console.log("showP2P...")
             snap.select('#path-kafka').attr({display: 'none'});
             snap.select('#path-p2p').attr({display: ''});
             snap.select('#producer-0-x').attr({display: ''});
             snap.select('#cluster-0-x').attr({display: 'none'});
             snap.select('#consumer-0-x').attr({display: ''});
+        }
+
+        $("#show_p2p").click(function () {
+            showP2P();
         });
-        $("#show_kafka").click(function () {
+
+        function showKafka() {
             snap.select('#path-p2p').attr({display: 'none'});
             snap.select('#path-kafka').attr({display: ''});
             snap.select('#producer-0-x').attr({display: ''});
             snap.select('#cluster-0-x').attr({display: ''});
             snap.select('#consumer-0-x').attr({display: ''});
+        }
+
+        $("#show_kafka").click(function () {
+            showKafka();
         });
         setTimeout(function () {
             createP2P();

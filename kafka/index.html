@@ -154,20 +154,40 @@
             }
             snap.selectAll('.leaf').attr({display: ''});
         });
-        $("#hide_all").click(function () {
-            snap.selectAll('.leaf').attr({display: 'none'});
-        });
 
         function show_data_flow(from, to) {
             snap.select(`#${from}`).attr({display: ''});
             snap.select(`#${to}`).attr({display: ''});
             snap.select(`#data-flow-${from}_${to}`).attr({display: ''});
         }
-
+        let steps = [
+            {
+                from:['producer-0-0'],
+                to:[`consumer-0-0`]
+            },
+            {
+                from:['producer-0-0'],
+                to:[`consumer-0-1`]
+            },
+            {
+                from:['producer-0-0'],
+                to:[`consumer-0-2`, `consumer-0-3`, `consumer-0-4`]
+            }
+        ]
+        let stepIndex = 0;
         $("#next").click(function () {
-            show_data_flow(`producer-0-0`, `consumer-0-0`);
-
+            let step = steps[stepIndex++];
+            for (let i = 0; i < step.from.length; i++) {
+                for (let j = 0; j < step.to.length; j++) {
+                    show_data_flow(step.from[i], step.to[j]);
+                }
+            }
         });
+        $("#hide_all").click(function () {
+            snap.selectAll('.leaf').attr({display: 'none'});
+            stepIndex = 0;
+        });
+
     });
 </script>
 <input id="next" type="button" class="button" value="Next" style="float: right;">

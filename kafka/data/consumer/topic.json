@@ -1,0 +1,36 @@
+{
+  "group": {
+    "id": "partition-{row}-{column}",
+    "transform": {
+      "translateX": 300,
+      "translateY": 300
+    },
+    "width": 80,
+    "height": 28,
+    "border": true
+  },
+  "shape": {
+    "type": "rect",
+    "attributes": {
+      "x": 10,
+      "y": 10
+    },
+    "matrix": {
+      "row": {
+        "count": 1,
+        "offset": 0
+      },
+      "column": {
+        "count": 4,
+        "offset": 100
+      }
+    }
+  },
+  "label": {
+    "text": "partition-{}",
+    "attributes": {
+      "x": 16,
+      "y": 8
+    }
+  }
+}

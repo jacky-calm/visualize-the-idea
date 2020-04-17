@@ -1,0 +1,36 @@
+{
+  "group": {
+    "id": "consumer-group-1-{row}-{column}",
+    "transform": {
+      "translateX": 300,
+      "translateY": 500
+    },
+    "width": 90,
+    "height": 28,
+    "border": true
+  },
+  "shape": {
+    "type": "rect",
+    "attributes": {
+      "x": 10,
+      "y": 10
+    },
+    "matrix": {
+      "row": {
+        "count": 1,
+        "offset": 0
+      },
+      "column": {
+        "count": 4,
+        "offset": 100
+      }
+    }
+  },
+  "label": {
+    "text": "consumer-{}",
+    "attributes": {
+      "x": 16,
+      "y": 8
+    }
+  }
+}

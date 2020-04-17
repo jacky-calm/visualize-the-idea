@@ -11,11 +11,12 @@
     <!--    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/2.0.6/velocity.min.js"></script>-->
 
 </head>
-<body>
+<body background="#D8FFDC">
 
 <script>
     // 定义svg对象, 在body里面添加一个svg
-    let svg = SVG().addTo('body').attr({width: 800, height: 800, id: 'svg'});
+    let svg = SVG().addTo('body').attr({width: 1200, height: 750, id: 'svg'});
+    svg.rect(1200, 750).fill("#E4FFEA");
     var snap = Snap("#svg");
     // marker: arrow head
     let marker = svg.marker(13, 13, function (add) {
@@ -110,13 +111,15 @@
         group.rect(
             data.group.border.width,
             data.group.border.height)
-            .attr({
-                x: data.group.transform.translateX,
-                y: data.group.transform.translateY - 5
-            })
-            .fill('none')
-            .stroke(data.group.border.stroke);
-        group.text(data.title.text) .attr({
+            .attr(
+                {
+                    ...{
+                        x: data.group.transform.translateX,
+                        y: data.group.transform.translateY - 5
+                    },
+                    ...data.group.border.attr
+                });
+        group.text(data.title.text).attr({
             x: data.group.transform.translateX + data.title.offset.x,
             y: data.group.transform.translateY + data.title.offset.y
         });

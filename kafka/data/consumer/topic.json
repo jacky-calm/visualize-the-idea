@@ -10,7 +10,13 @@
     "border": {
       "width": 400,
       "height": 60,
-      "stroke": "red"
+      "attr": {
+        "stroke": "none",
+        "fill": "#FFAF4A",
+        "opacity": 0.2,
+        "rx": 10,
+        "ry": 10
+      }
     }
   },
   "shape": {

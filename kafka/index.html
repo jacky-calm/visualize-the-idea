@@ -105,9 +105,28 @@
         }
     }
 
+    function createMatrixGroup(container, data) {
+        let group = container.group();
+        group.rect(
+            data.group.border.width,
+            data.group.border.height)
+            .attr({
+                x: data.group.transform.translateX,
+                y: data.group.transform.translateY - 5
+            })
+            .fill('none')
+            .stroke(data.group.border.stroke);
+        group.text(data.title.text) .attr({
+            x: data.group.transform.translateX + data.title.offset.x,
+            y: data.group.transform.translateY + data.title.offset.y
+        });
+        return group;
+    }
+
     // a matrix is a group of nodes replicated from data
     function createMatrix(container, data) {
-        let group = container.group();
+        let group = createMatrixGroup(container, data);
+
         let matrix = data.shape.matrix;
         if (matrix != null) {
             for (let i = 0; i < matrix.row.count; i++) {

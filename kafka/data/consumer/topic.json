@@ -7,13 +7,19 @@
     },
     "width": 80,
     "height": 28,
-    "border": true
+    "border": {
+      "width": 400,
+      "height": 60,
+      "stroke": "red"
+    }
   },
   "shape": {
-    "type": "rect",
+    "type": "ellipse",
     "attributes": {
-      "x": 10,
-      "y": 10
+      "cx": 50,
+      "cy": 25,
+      "rx": 40,
+      "ry": 20
     },
     "matrix": {
       "row": {
@@ -31,6 +37,17 @@
     "attributes": {
       "x": 16,
       "y": 8
+    }
+  },
+  "title": {
+    "text": "topic 1",
+    "attributes": {
+      "x": 16,
+      "y": 8
+    },
+    "offset" : {
+      "x": -70,
+      "y": 10
     }
   }
 }

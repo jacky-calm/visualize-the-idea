@@ -7,7 +7,11 @@
     },
     "width": 90,
     "height": 28,
-    "border": true
+    "border": {
+      "width": 210,
+      "height": 60,
+      "stroke": "red"
+    }
   },
   "shape": {
     "type": "rect",
@@ -31,6 +35,17 @@
     "attributes": {
       "x": 16,
       "y": 8
+    }
+  },
+  "title": {
+    "text": "consumer group 2",
+    "attributes": {
+      "x": 16,
+      "y": 8
+    },
+    "offset" : {
+      "x": -130,
+      "y": 10
     }
   }
 }

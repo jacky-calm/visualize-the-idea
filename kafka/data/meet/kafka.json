@@ -9,7 +9,7 @@
     "height": 30
   },
   "shape": {
-    "type": "rect",
+    "type": "ellipse",
     "attributes": {
       "x": 10,
       "y": 10

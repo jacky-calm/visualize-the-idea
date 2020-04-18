@@ -1,6 +1,7 @@
 {
   "group": {
     "id": "consumer-group-1-{row}-{column}",
+    "name": "consumer-group-1",
     "transform": {
       "translateX": 300,
       "translateY": 500

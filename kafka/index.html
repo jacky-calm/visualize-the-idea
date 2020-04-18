@@ -63,6 +63,18 @@
         return `${start}_${end}`;
     }
 
+    function show(...ids) {
+        for (let id of ids) {
+            snap.select(`#${id}`).attr({display: ''});
+        }
+    }
+
+    function hide(...ids) {
+        for (let id of ids) {
+            snap.select(`#${id}`).attr({display: 'none'});
+        }
+    }
+
     function buildPath(start, endList, i, path) {
         let startNode = svg.findOne(`#${start}`);
         let endNode = svg.findOne(`#${endList[i]}`);
@@ -95,7 +107,7 @@
             let {startX, startY, endX, endY, data} = buildPath(start, endList, i, path);
             let id = buildPathId(start, endList[i]);
             let pathId = `${start}_${endList[i]}`;
-            let group = container.group().id(`data-flow-${pathId}`).addClass('leaf');
+            let group = container.group().id(`data-flow-${pathId}`).addClass('leaf path');
             group.path(data).id(id)
                 .fill('none')
                 .stroke({width: 1, color: 'blue'})
@@ -107,7 +119,7 @@
     }
 
     function createMatrixGroup(container, data) {
-        let group = container.group();
+        let group = container.group().id(data.group.name).addClass('matrix-group');
         group.rect(
             data.group.border.width,
             data.group.border.height)
@@ -123,7 +135,7 @@
             x: data.group.transform.translateX + data.title.offset.x,
             y: data.group.transform.translateY + data.title.offset.y
         });
-        return group;
+        return group.addClass('leaf');
     }
 
     // a matrix is a group of nodes replicated from data
@@ -146,7 +158,8 @@
         }
     }
 
-    function createMatricPath(starts, ends, kafka, offset, mapping) {
+    function createMatricPath(starts, ends, pathId, offset, mapping) {
+        let container = svg.group().id(`paths-${pathId}`);
         for (let i = starts.range[0]; i < starts.range[1]; i++) {
             for (let j = ends.range[0]; j < ends.range[1]; j++) {
                 let path = {
@@ -155,8 +168,8 @@
                         `${ends.pattern}${j}`
                     ]
                 };
-                createPath(kafka, {...path, ...offset}, marker);
-                if(mapping == 'one-2-one') break;
+                createPath(container, {...path, ...offset}, marker);
+                if (mapping == 'one-2-one') break;
             }
         }
     }
@@ -169,7 +182,6 @@
         });
 
         function createConsumerPath() {
-            let kafka = svg.group().id('path-kafka');
             let offset1 = {
                 "startOffsetX": -30,
                 "startOffsetY": 20,
@@ -179,19 +191,19 @@
             createMatricPath(
                 {pattern: 'partition-0-', range: [0, 4]},
                 {pattern: 'consumer-group-1-0-', range: [0, 1]},
-                kafka,
+                'group1-1-consumer',
                 offset1
             );
             createMatricPath(
                 {pattern: 'partition-0-', range: [2, 4]},
                 {pattern: 'consumer-group-1-0-', range: [1, 2]},
-                kafka,
+                'group1-2-consumer',
                 offset1
             );
             createMatricPath(
                 {pattern: 'partition-0-', range: [0, 4], mapping: 'one-2-one'},
                 {pattern: 'consumer-group-1-0-', range: [0, 4], mapping: 'one-2-one'},
-                kafka,
+                'group1-4-consumer',
                 offset1
             );
             let offset2 = {
@@ -203,25 +215,26 @@
             createMatricPath(
                 {pattern: 'partition-0-', range: [0, 2]},
                 {pattern: 'consumer-group-2-0-', range: [0, 1]},
-                kafka,
+                'group2-1-consumer',
                 offset2
             );
             createMatricPath(
                 {pattern: 'partition-0-', range: [2, 4]},
                 {pattern: 'consumer-group-2-0-', range: [1, 2]},
-                kafka,
+                'group2-2-consumer',
                 offset2
             );
         }
 
-        function show_data_flow(froms, tos) {
+        function show_data_flow(froms, tos, display = '', mapping='full') {
             for (let i = 0; i < froms.length; i++) {
                 for (let j = 0; j < tos.length; j++) {
                     let from = froms[i];
                     let to = tos[j];
                     snap.select(`#${from}`).attr({display: ''});
                     snap.select(`#${to}`).attr({display: ''});
-                    snap.select(`#data-flow-${from}_${to}`).attr({display: ''});
+                    snap.select(`#data-flow-${from}_${to}`).attr({display: display});
+                    if(mapping='one-2-one') break;
                 }
             }
         }
@@ -230,67 +243,50 @@
             snap.selectAll('.leaf').attr({display: 'none'});
         }
 
+        function thanks() {
+            // snap.select(`#consumer-0-0 text`).attr({text: `推荐`, x: 26, y: 28});
+            // snap.text('thanks').attr(
+            //     // {x: 500, y: 600}
+            // )
+        }
+
         let steps = [
-            [showP2P, hideLeaves],
-            [show_data_flow.bind(null, ['producer-0-2'], [`consumer-0-2`])],
-            [show_data_flow.bind(null, ['producer-0-1'], [`consumer-0-2`])],
-            [show_data_flow.bind(null, ['producer-0-3'], [`consumer-0-2`, `consumer-0-3`, `consumer-0-4`])]
+            [show.bind(null, 'consumer-group-1'), hide.bind(null, 'consumer-group-1-0-1', 'consumer-group-1-0-2', 'consumer-group-1-0-3')],
+            [show_data_flow.bind(null, ['partition-0-0', 'partition-0-1', 'partition-0-2','partition-0-3'], [`consumer-group-1-0-0`])],
+            [show.bind(null, 'consumer-group-1-0-1')],
+            [show_data_flow.bind(null, ['partition-0-2', 'partition-0-3'], [`consumer-group-1-0-0`], 'none')],
+            [show_data_flow.bind(null, ['partition-0-2','partition-0-3'], [`consumer-group-1-0-1`])],
+            [show.bind(null, 'consumer-group-1-0-2', 'consumer-group-1-0-3')],
+            [show_data_flow.bind(null, ['partition-0-0', 'partition-0-1'], [`consumer-group-1-0-0`], 'none')],
+            [show_data_flow.bind(null, ['partition-0-2','partition-0-3'], [`consumer-group-1-0-1`], 'none')],
+            [show_data_flow.bind(null, ['partition-0-0'], [`consumer-group-1-0-0`])],
+            [show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, ['partition-0-2'], [`consumer-group-1-0-2`])],
+            [show_data_flow.bind(null, ['partition-0-3'], [`consumer-group-1-0-3`])],
+            [show.bind(null, 'consumer-group-2')],
+            [show_data_flow.bind(null, ['partition-0-0', 'partition-0-1'], [`consumer-group-2-0-0`])],
+            [show_data_flow.bind(null, ['partition-0-2','partition-0-3'], [`consumer-group-2-0-1`])],
+            [thanks]
         ]
         let stepIndex = 0;
 
-        $("#nextP2P").click(function () {
+        $("#next").click(function () {
             let step = steps[stepIndex++];
             for (let i = 0; i < step.length; i++) {
                 step[i]();
             }
         });
 
-        let kafka_steps = [
-            [showKafka, hideLeaves],
-            [show_data_flow.bind(null, ['producer-0-2'], [`cluster-0-1`])],
-            [show_data_flow.bind(null, ['cluster-0-1'], [`consumer-0-2`])],
-            [show_data_flow.bind(null, ['producer-0-1'], [`cluster-0-1`])],
-            [show_data_flow.bind(null, ['cluster-0-1'], [`consumer-0-1`, `consumer-0-3`, `consumer-0-4`])]
-        ]
-        let kafka_stepIndex = 0;
-
-        $("#nextKafka").click(function () {
-            let step = kafka_steps[kafka_stepIndex++];
-            for (let i = 0; i < step.length; i++) {
-                step[i]();
-            }
-        });
-
         $("#hide_all").click(function () {
-            snap.select('#path-p2p').attr({display: 'none'});
-            snap.select('#path-kafka').attr({display: 'none'});
-            snap.select('#producer-0-x').attr({display: 'none'});
-            snap.select('#cluster-0-x').attr({display: 'none'});
-            snap.select('#consumer-0-x').attr({display: 'none'});
+            hideLeaves();
             stepIndex = 0;
-        });
-
-        function showP2P() {
-            console.log("showP2P...")
-            snap.selectAll('.leaf').attr({display: ''});
-            snap.select('#path-kafka').attr({display: 'none'});
-            snap.select('#path-p2p').attr({display: ''});
-            snap.select('#producer-0-x').attr({display: ''});
-            snap.select('#cluster-0-x').attr({display: 'none'});
-            snap.select('#consumer-0-x').attr({display: ''});
-        }
-
-        $("#show_p2p").click(function () {
-            showP2P();
         });
 
         function showKafka() {
             snap.selectAll('.leaf').attr({display: ''});
-            snap.select('#path-p2p').attr({display: 'none'});
-            snap.select('#path-kafka').attr({display: ''});
-            snap.select('#producer-0-x').attr({display: ''});
-            snap.select('#cluster-0-x').attr({display: ''});
-            snap.select('#consumer-0-x').attr({display: ''});
+            snap.selectAll('.path').attr({display: 'none'});
+            snap.select('#consumer-group-1').attr({display: 'none'});
+            snap.select('#consumer-group-2').attr({display: 'none'});
         }
 
         $("#show_kafka").click(function () {
@@ -298,12 +294,11 @@
         });
         setTimeout(function () {
             createConsumerPath();
+            thanks()
         }, 500);
     });
 </script>
-<input id="nextP2P" type="button" class="button" value="Next P2P" style="float: right;">
-<input id="nextKafka" type="button" class="button" value="Next Kafka" style="float: right;">
-<input id="show_p2p" type="button" class="button" value="Show P2P" style="float: right;">
+<input id="next" type="button" class="button" value="Next" style="float: right;">
 <input id="show_kafka" type="button" class="button" value="Show Kafka" style="float: right;">
 <input id="hide_all" type="button" class="button" value="Hide all" style="float: right;">
 </body>

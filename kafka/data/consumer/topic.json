@@ -1,6 +1,7 @@
 {
   "group": {
     "id": "partition-{row}-{column}",
+    "name": "topic",
     "transform": {
       "translateX": 300,
       "translateY": 300

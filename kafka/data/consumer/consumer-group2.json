@@ -2,13 +2,13 @@
   "group": {
     "id": "consumer-group-2-{row}-{column}",
     "transform": {
-      "translateX": 400,
+      "translateX": 300,
       "translateY": 100
     },
     "width": 90,
     "height": 28,
     "border": {
-      "width": 210,
+      "width": 410,
       "height": 60,
       "attr": {
         "stroke": "#7F46FF",

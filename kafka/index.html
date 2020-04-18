@@ -146,6 +146,21 @@
         }
     }
 
+    function createMatricPath(starts, ends, kafka, offset, mapping) {
+        for (let i = starts.range[0]; i < starts.range[1]; i++) {
+            for (let j = ends.range[0]; j < ends.range[1]; j++) {
+                let path = {
+                    "start": `${starts.pattern}${i}`,
+                    "end": [
+                        `${ends.pattern}${j}`
+                    ]
+                };
+                createPath(kafka, {...path, ...offset}, marker);
+                if(mapping == 'one-2-one') break;
+            }
+        }
+    }
+
     SVG.on(document, 'DOMContentLoaded', function () {
         ["consumer-group1", "consumer-group2", "topic"].forEach(file => {
             $.getJSON(`data/consumer/${file}.json?${version}`, function (node) {
@@ -153,57 +168,50 @@
             });
         });
 
-        function createP2P() {
-            let p2p = svg.group().id('path-p2p');
-            for (let i = 0; i < 5; i++) {
-                for (let j = 0; j < 5; j++) {
-                    let path = {
-                        "start": `producer-0-${i}`,
-                        "end": [
-                            `consumer-0-${j}`
-                        ],
-                        "startOffsetX": -30,
-                        "startOffsetY": 20,
-                        "endOffsetX": 40,
-                        "endOffsetY": -10
-                    }
-                    createPath(p2p, path, marker);
-                }
-            }
-        }
-
-        function createKafka() {
+        function createConsumerPath() {
             let kafka = svg.group().id('path-kafka');
-            for (let i = 0; i < 5; i++) {
-                for (let j = 0; j < 3; j++) {
-                    let path = {
-                        "start": `producer-0-${i}`,
-                        "end": [
-                            `cluster-0-${j}`
-                        ],
-                        "startOffsetX": -30,
-                        "startOffsetY": 20,
-                        "endOffsetX": 40,
-                        "endOffsetY": -10
-                    };
-                    createPath(kafka, path, marker);
-                }
-            }
-            for (let i = 0; i < 3; i++) {
-                for (let j = 0; j < 5; j++) {
-                    let path = {
-                        "start": `cluster-0-${i}`,
-                        "end": [
-                            `consumer-0-${j}`
-                        ],
-                        "startOffsetX": -30,
-                        "startOffsetY": 10,
-                        "endOffsetX": 40,
-                        "endOffsetY": -10
-                    };
-                    createPath(kafka, path, marker);
-                }
-            }
+            let offset1 = {
+                "startOffsetX": -30,
+                "startOffsetY": 20,
+                "endOffsetX": 60,
+                "endOffsetY": 0
+            };
+            createMatricPath(
+                {pattern: 'partition-0-', range: [0, 4]},
+                {pattern: 'consumer-group-1-0-', range: [0, 1]},
+                kafka,
+                offset1
+            );
+            createMatricPath(
+                {pattern: 'partition-0-', range: [2, 4]},
+                {pattern: 'consumer-group-1-0-', range: [1, 2]},
+                kafka,
+                offset1
+            );
+            createMatricPath(
+                {pattern: 'partition-0-', range: [0, 4], mapping: 'one-2-one'},
+                {pattern: 'consumer-group-1-0-', range: [0, 4], mapping: 'one-2-one'},
+                kafka,
+                offset1
+            );
+            let offset2 = {
+                "startOffsetX": -30,
+                "startOffsetY": -30,
+                "endOffsetX": 60,
+                "endOffsetY": 50
+            };
+            createMatricPath(
+                {pattern: 'partition-0-', range: [0, 2]},
+                {pattern: 'consumer-group-2-0-', range: [0, 1]},
+                kafka,
+                offset2
+            );
+            createMatricPath(
+                {pattern: 'partition-0-', range: [2, 4]},
+                {pattern: 'consumer-group-2-0-', range: [1, 2]},
+                kafka,
+                offset2
+            );
         }
 
         function show_data_flow(froms, tos) {
@@ -289,8 +297,7 @@
             showKafka();
         });
         setTimeout(function () {
-            // createP2P();
-            // createKafka();
+            createConsumerPath();
         }, 500);
     });
 </script>

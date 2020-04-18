@@ -71,10 +71,17 @@
 
     function hide(...ids) {
         for (let id of ids) {
+            console.log(`hide #${id}`);
             snap.select(`#${id}`).attr({display: 'none'});
         }
     }
 
+    function fail(...ids) {
+        for (let id of ids) {
+            console.log(`fail #${id}`);
+            snap.select(`#${id} rect`).attr({"stroke-dasharray": "5,5", stroke:'red'});
+        }
+    }
     function buildPath(start, endList, i, path) {
         let startNode = svg.findOne(`#${start}`);
         let endNode = svg.findOne(`#${endList[i]}`);
@@ -201,8 +208,8 @@
                 offset1
             );
             createMatricPath(
-                {pattern: 'partition-0-', range: [0, 4], mapping: 'one-2-one'},
-                {pattern: 'consumer-group-1-0-', range: [0, 4], mapping: 'one-2-one'},
+                {pattern: 'partition-0-', range: [0, 4]},
+                {pattern: 'consumer-group-1-0-', range: [0, 4]},
                 'group1-4-consumer',
                 offset1
             );
@@ -226,7 +233,7 @@
             );
         }
 
-        function show_data_flow(froms, tos, display = '', mapping='full') {
+        function show_data_flow(froms, tos, display = '', mapping = 'full') {
             for (let i = 0; i < froms.length; i++) {
                 for (let j = 0; j < tos.length; j++) {
                     let from = froms[i];
@@ -234,7 +241,7 @@
                     snap.select(`#${from}`).attr({display: ''});
                     snap.select(`#${to}`).attr({display: ''});
                     snap.select(`#data-flow-${from}_${to}`).attr({display: display});
-                    if(mapping='one-2-one') break;
+                    if (mapping = 'one-2-one') break;
                 }
             }
         }
@@ -244,28 +251,37 @@
         }
 
         function thanks() {
-            // snap.select(`#consumer-0-0 text`).attr({text: `推荐`, x: 26, y: 28});
-            // snap.text('thanks').attr(
-            //     // {x: 500, y: 600}
-            // )
+            let thanks = snap.text(200, 666, '您的 点赞，转发，or 赞赏 都是对我的最大支持。更多精品制作中 ... ').attr({
+                fill: "red",
+                "font-size": "20px"
+            })
+            snap.g(thanks).attr({id: "thanks"})
         }
 
         let steps = [
             [show.bind(null, 'consumer-group-1'), hide.bind(null, 'consumer-group-1-0-1', 'consumer-group-1-0-2', 'consumer-group-1-0-3')],
-            [show_data_flow.bind(null, ['partition-0-0', 'partition-0-1', 'partition-0-2','partition-0-3'], [`consumer-group-1-0-0`])],
+            [show_data_flow.bind(null, ['partition-0-0', 'partition-0-1', 'partition-0-2', 'partition-0-3'], [`consumer-group-1-0-0`])],
             [show.bind(null, 'consumer-group-1-0-1')],
             [show_data_flow.bind(null, ['partition-0-2', 'partition-0-3'], [`consumer-group-1-0-0`], 'none')],
-            [show_data_flow.bind(null, ['partition-0-2','partition-0-3'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, ['partition-0-2', 'partition-0-3'], [`consumer-group-1-0-1`])],
             [show.bind(null, 'consumer-group-1-0-2', 'consumer-group-1-0-3')],
-            [show_data_flow.bind(null, ['partition-0-0', 'partition-0-1'], [`consumer-group-1-0-0`], 'none')],
-            [show_data_flow.bind(null, ['partition-0-2','partition-0-3'], [`consumer-group-1-0-1`], 'none')],
-            [show_data_flow.bind(null, ['partition-0-0'], [`consumer-group-1-0-0`])],
-            [show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-1`])],
-            [show_data_flow.bind(null, ['partition-0-2'], [`consumer-group-1-0-2`])],
+
+            // four consumers
+            [show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-0`], 'none')],
+            [show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-2`])],
+            [show_data_flow.bind(null, ['partition-0-3'], [`consumer-group-1-0-1`], 'none')],
             [show_data_flow.bind(null, ['partition-0-3'], [`consumer-group-1-0-3`])],
+            // consumer 2 failed
+            [
+                fail.bind(null, 'consumer-group-1-0-2'),
+                show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-2`], 'none')
+            ],
+            [
+                show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-0`], ''),
+            ],
             [show.bind(null, 'consumer-group-2')],
             [show_data_flow.bind(null, ['partition-0-0', 'partition-0-1'], [`consumer-group-2-0-0`])],
-            [show_data_flow.bind(null, ['partition-0-2','partition-0-3'], [`consumer-group-2-0-1`])],
+            [show_data_flow.bind(null, ['partition-0-2', 'partition-0-3'], [`consumer-group-2-0-1`])],
             [thanks]
         ]
         let stepIndex = 0;
@@ -283,18 +299,22 @@
         });
 
         function showKafka() {
+            stepIndex = 0;
             snap.selectAll('.leaf').attr({display: ''});
             snap.selectAll('.path').attr({display: 'none'});
             snap.select('#consumer-group-1').attr({display: 'none'});
             snap.select('#consumer-group-2').attr({display: 'none'});
+            svg.findOne('#thanks').attr({display: 'none'});
         }
 
         $("#show_kafka").click(function () {
             showKafka();
         });
         setTimeout(function () {
+            thanks();
             createConsumerPath();
-            thanks()
+            showKafka();
+
         }, 500);
     });
 </script>

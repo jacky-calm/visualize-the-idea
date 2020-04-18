@@ -21,10 +21,10 @@
 <body background="#D8FFDC">
 <div class="container-fluid">
     <div class="row">
-        <div id='paper' class="col-md-8">
+        <div id='paper' class="col-md-9">
             <!-- SVG paper -->
         </div>
-        <div id='pannel' class="col-md-4 bg-light">
+        <div id='pannel' class="col-md-3 bg-light">
             <div class="container">
                 <div class="row">
                     <div class="card" style="width: 18rem;">
@@ -46,7 +46,7 @@
 <script>
     // 定义svg对象, 在body里面添加一个svg
     let svg = SVG().addTo('#paper').attr({width: 1200, height: 750, id: 'svg'});
-    svg.rect(1000, 750).fill("#E4FFEA");
+    svg.rect(1000, 750).fill("#E3EDCD");
     var snap = Snap("#svg");
     // marker: arrow head
     let marker = svg.marker(13, 13, function (add) {

@@ -1,8 +1,15 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
 <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
     <title>Vizit</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?1">
     <script src="node_modules/jquery/dist/jquery.js"></script>
     <script src="node_modules/@svgdotjs/svg.js/dist/svg.js"></script>
     <script src="node_modules/@svgdotjs/svg.draggable.js/dist/svg.draggable.js"></script>
@@ -12,11 +19,34 @@
 
 </head>
 <body background="#D8FFDC">
-
+<div class="container-fluid">
+    <div class="row">
+        <div id='paper' class="col-md-8">
+            <!-- SVG paper -->
+        </div>
+        <div id='pannel' class="col-md-4 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">Card title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
+                                of the card's content.</p>
+                            <a id="show_kafka" href="#" class="card-link">Show Kafka</a>
+                            <a id="hide_all" href="#" class="card-link">Hide All</a>
+                            <a id="next" href="#" class="card-link">Next</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     // 定义svg对象, 在body里面添加一个svg
-    let svg = SVG().addTo('body').attr({width: 1200, height: 750, id: 'svg'});
-    svg.rect(1200, 750).fill("#E4FFEA");
+    let svg = SVG().addTo('#paper').attr({width: 1200, height: 750, id: 'svg'});
+    svg.rect(1000, 750).fill("#E4FFEA");
     var snap = Snap("#svg");
     // marker: arrow head
     let marker = svg.marker(13, 13, function (add) {
@@ -79,9 +109,10 @@
     function fail(...ids) {
         for (let id of ids) {
             console.log(`fail #${id}`);
-            snap.select(`#${id} rect`).attr({"stroke-dasharray": "5,5", stroke:'red'});
+            snap.select(`#${id} rect`).attr({"stroke-dasharray": "5,5", stroke: 'red'});
         }
     }
+
     function buildPath(start, endList, i, path) {
         let startNode = svg.findOne(`#${start}`);
         let endNode = svg.findOne(`#${endList[i]}`);
@@ -318,8 +349,11 @@
         }, 500);
     });
 </script>
-<input id="next" type="button" class="button" value="Next" style="float: right;">
-<input id="show_kafka" type="button" class="button" value="Show Kafka" style="float: right;">
-<input id="hide_all" type="button" class="button" value="Hide all" style="float: right;">
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
 </body>
 </html>

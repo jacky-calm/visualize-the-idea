@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vizit</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="node_modules/@svgdotjs/svg.js/dist/svg.js"></script>
+    <script src="node_modules/@svgdotjs/svg.draggable.js/dist/svg.draggable.js"></script>
+    <script src="scripts/snap.svg.js"></script>
+    <script src="http://svg.dabbles.info/animate-object-path.js"></script>
+    <!--    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/2.0.6/velocity.min.js"></script>-->
+
+</head>
+<body background="#D8FFDC">
+
+<script>
+    // 定义svg对象, 在body里面添加一个svg
+    let svg = SVG().addTo('body').attr({width: 1200, height: 750, id: 'svg'});
+    svg.rect(1200, 750).fill("#E4FFEA");
+    var snap = Snap("#svg");
+    // marker: arrow head
+    let marker = svg.marker(13, 13, function (add) {
+        add.path('M2,2 L2,11 L10,6 L2,2').fill('blue').stroke({width: 1, color: 'blue'})
+    }).attr({"refX": "2", "refY": "6", "orient": "auto"});
+    // Set the global configs to synchronous
+    $.ajaxSetup({
+        async: false
+    });
+    let version = Date.now();
+
+    function createNode(container, data) {
+        // 用一个group把节点边框和文本放在一起，这样可以利用group的transform来定义
+        // 整个group里面所有节点的坐标位置
+        let translateX = data.group.transform.translateX;
+        let translateY = data.group.transform.translateY;
+        let label = container.text(data.label.text);
+        // let label = container.text('');
+
+        let width = data.group.width == null ? (data.label.text.length * 8 + 10) : parseInt(data.group.width);
+        let height = data.group.height == null ? 28 : parseInt(data.group.height);
+        let group = container.group()
+            .transform({translateX: translateX, translateY: translateY})
+            .addClass('leaf')
+            .id(data.group.id)
+            .data('leftTopX', translateX)
+            .data('leftTopY', translateY)
+            .data('width', width)
+            .data('height', height)
+        ;
+        // TODO style 的信息暂时hardcode, 后面会用程序控制动态变化的效果。
+        let style = {fill: 'none', stroke: 'blue'};
+        let attributes = {...style, ...data.shape.attributes};
+        // 动态的调用函数，可以支持绘制各种图形，比如:rect, ellipse
+        let rect = container[data.shape.type](width, height).attr(attributes);
+        group.add(rect);
+
+        label.attr(data.label.attributes);
+        group.add(label);
+        return group.draggable(); // 支持拖拽
+    }
+
+    function buildPathId(start, end) {
+        return `${start}_${end}`;
+    }
+
+    function show(...ids) {
+        for (let id of ids) {
+            snap.select(`#${id}`).attr({display: ''});
+        }
+    }
+
+    function hide(...ids) {
+        for (let id of ids) {
+            console.log(`hide #${id}`);
+            snap.select(`#${id}`).attr({display: 'none'});
+        }
+    }
+
+    function fail(...ids) {
+        for (let id of ids) {
+            console.log(`fail #${id}`);
+            snap.select(`#${id} rect`).attr({"stroke-dasharray": "5,5", stroke:'red'});
+        }
+    }
+    function buildPath(start, endList, i, path) {
+        let startNode = svg.findOne(`#${start}`);
+        let endNode = svg.findOne(`#${endList[i]}`);
+        let startX = startNode.data('leftTopX') + startNode.data('width') + path.startOffsetX;
+        let startY = startNode.data('leftTopY') + startNode.data('height') + path.startOffsetY;
+        let endX = endNode.data('leftTopX') + path.endOffsetX;
+        let endY = endNode.data('leftTopY') + path.endOffsetY;
+        let data = `M ${startX}, ${startY} ${endX}, ${endY}`;
+        if (path.curve != null) {
+            data = `M ${startX}, ${startY} ${path.curve} ${endX}, ${endY}`;
+        }
+        return {startX, startY, endX, endY, data};
+    }
+
+    function animate(container, pathId, loop, callback) {
+        let points = svg.findOne(`#${pathId}`).data('points');
+        container.circle(20).attr({cx: points[0], cy: points[1]}).fill('green')
+            .id('circle-' + pathId)
+            .animate(2500, 100, 'now')
+            .move(points[2] - 10, points[3] - 10)
+            .loop(Number.MAX_SAFE_INTEGER, false, Math.random() * 2000)
+        // .loop(1, false, 200)
+        ;
+    }
+
+    function createPath(container, path, marker) {
+        let start = path.start;
+        let endList = path.end;
+        for (let i = 0; i < endList.length; i++) {
+            let {startX, startY, endX, endY, data} = buildPath(start, endList, i, path);
+            let id = buildPathId(start, endList[i]);
+            let pathId = `${start}_${endList[i]}`;
+            let group = container.group().id(`data-flow-${pathId}`).addClass('leaf path');
+            group.path(data).id(id)
+                .fill('none')
+                .stroke({width: 1, color: 'blue'})
+                .marker('end', marker)
+                .data('points', [startX, startY, endX, endY])
+                .data('d', data);
+            animate(group, pathId);
+        }
+    }
+
+    function createMatrixGroup(container, data) {
+        let group = container.group().id(data.group.name).addClass('matrix-group');
+        group.rect(
+            data.group.border.width,
+            data.group.border.height)
+            .attr(
+                {
+                    ...{
+                        x: data.group.transform.translateX,
+                        y: data.group.transform.translateY - 5
+                    },
+                    ...data.group.border.attr
+                });
+        group.text(data.title.text).attr({
+            x: data.group.transform.translateX + data.title.offset.x,
+            y: data.group.transform.translateY + data.title.offset.y
+        });
+        return group.addClass('leaf');
+    }
+
+    // a matrix is a group of nodes replicated from data
+    function createMatrix(container, data) {
+        let group = createMatrixGroup(container, data);
+
+        let matrix = data.shape.matrix;
+        if (matrix != null) {
+            for (let i = 0; i < matrix.row.count; i++) {
+                let row = group.group().id(data.group.id.replace("{row}", i).replace("{column}", 'x'));
+                for (let j = 0; j < matrix.column.count; j++) {
+                    let nodeReplica = JSON.parse(JSON.stringify(data));
+                    nodeReplica.group.transform.translateX += nodeReplica.shape.matrix.column.offset * j;
+                    nodeReplica.group.transform.translateY += nodeReplica.shape.matrix.row.offset * i;
+                    nodeReplica.label.text = nodeReplica.label.text.replace("{}", j);
+                    nodeReplica.group.id = nodeReplica.group.id.replace("{row}", i).replace("{column}", j);
+                    createNode(row, nodeReplica);
+                }
+            }
+        }
+    }
+
+    function createMatricPath(starts, ends, pathId, offset, mapping) {
+        let container = svg.group().id(`paths-${pathId}`);
+        for (let i = starts.range[0]; i < starts.range[1]; i++) {
+            for (let j = ends.range[0]; j < ends.range[1]; j++) {
+                let path = {
+                    "start": `${starts.pattern}${i}`,
+                    "end": [
+                        `${ends.pattern}${j}`
+                    ]
+                };
+                createPath(container, {...path, ...offset}, marker);
+                if (mapping == 'one-2-one') break;
+            }
+        }
+    }
+
+    SVG.on(document, 'DOMContentLoaded', function () {
+        ["consumer-group1", "consumer-group2", "topic"].forEach(file => {
+            $.getJSON(`data/consumer/${file}.json?${version}`, function (node) {
+                createMatrix(svg, node);
+            });
+        });
+
+        function createConsumerPath() {
+            let offset1 = {
+                "startOffsetX": -30,
+                "startOffsetY": 20,
+                "endOffsetX": 60,
+                "endOffsetY": 0
+            };
+            createMatricPath(
+                {pattern: 'partition-0-', range: [0, 4]},
+                {pattern: 'consumer-group-1-0-', range: [0, 1]},
+                'group1-1-consumer',
+                offset1
+            );
+            createMatricPath(
+                {pattern: 'partition-0-', range: [2, 4]},
+                {pattern: 'consumer-group-1-0-', range: [1, 2]},
+                'group1-2-consumer',
+                offset1
+            );
+            createMatricPath(
+                {pattern: 'partition-0-', range: [0, 4]},
+                {pattern: 'consumer-group-1-0-', range: [0, 4]},
+                'group1-4-consumer',
+                offset1
+            );
+            let offset2 = {
+                "startOffsetX": -30,
+                "startOffsetY": -30,
+                "endOffsetX": 60,
+                "endOffsetY": 50
+            };
+            createMatricPath(
+                {pattern: 'partition-0-', range: [0, 2]},
+                {pattern: 'consumer-group-2-0-', range: [0, 1]},
+                'group2-1-consumer',
+                offset2
+            );
+            createMatricPath(
+                {pattern: 'partition-0-', range: [2, 4]},
+                {pattern: 'consumer-group-2-0-', range: [1, 2]},
+                'group2-2-consumer',
+                offset2
+            );
+        }
+
+        function show_data_flow(froms, tos, display = '', mapping = 'full') {
+            for (let i = 0; i < froms.length; i++) {
+                for (let j = 0; j < tos.length; j++) {
+                    let from = froms[i];
+                    let to = tos[j];
+                    snap.select(`#${from}`).attr({display: ''});
+                    snap.select(`#${to}`).attr({display: ''});
+                    snap.select(`#data-flow-${from}_${to}`).attr({display: display});
+                    if (mapping = 'one-2-one') break;
+                }
+            }
+        }
+
+        function hideLeaves() {
+            snap.selectAll('.leaf').attr({display: 'none'});
+        }
+
+        function thanks() {
+            let thanks = snap.text(200, 666, '您的 点赞，转发，or 赞赏 都是对我的最大支持。更多精品制作中 ... ').attr({
+                fill: "red",
+                "font-size": "20px"
+            })
+            snap.g(thanks).attr({id: "thanks"})
+        }
+
+        let steps = [
+            [show.bind(null, 'consumer-group-1'), hide.bind(null, 'consumer-group-1-0-1', 'consumer-group-1-0-2', 'consumer-group-1-0-3')],
+            [show_data_flow.bind(null, ['partition-0-0', 'partition-0-1', 'partition-0-2', 'partition-0-3'], [`consumer-group-1-0-0`])],
+            [show.bind(null, 'consumer-group-1-0-1')],
+            [show_data_flow.bind(null, ['partition-0-2', 'partition-0-3'], [`consumer-group-1-0-0`], 'none')],
+            [show_data_flow.bind(null, ['partition-0-2', 'partition-0-3'], [`consumer-group-1-0-1`])],
+            [show.bind(null, 'consumer-group-1-0-2', 'consumer-group-1-0-3')],
+
+            // four consumers
+            [show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-0`], 'none')],
+            [show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-2`])],
+            [show_data_flow.bind(null, ['partition-0-3'], [`consumer-group-1-0-1`], 'none')],
+            [show_data_flow.bind(null, ['partition-0-3'], [`consumer-group-1-0-3`])],
+            // consumer 2 failed
+            [
+                fail.bind(null, 'consumer-group-1-0-2'),
+                show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-2`], 'none')
+            ],
+            [
+                show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-0`], ''),
+            ],
+            [show.bind(null, 'consumer-group-2')],
+            [show_data_flow.bind(null, ['partition-0-0', 'partition-0-1'], [`consumer-group-2-0-0`])],
+            [show_data_flow.bind(null, ['partition-0-2', 'partition-0-3'], [`consumer-group-2-0-1`])],
+            [thanks]
+        ]
+        let stepIndex = 0;
+
+        $("#next").click(function () {
+            let step = steps[stepIndex++];
+            for (let i = 0; i < step.length; i++) {
+                step[i]();
+            }
+        });
+
+        $("#hide_all").click(function () {
+            hideLeaves();
+            stepIndex = 0;
+        });
+
+        function showKafka() {
+            stepIndex = 0;
+            snap.selectAll('.leaf').attr({display: ''});
+            snap.selectAll('.path').attr({display: 'none'});
+            snap.select('#consumer-group-1').attr({display: 'none'});
+            snap.select('#consumer-group-2').attr({display: 'none'});
+            svg.findOne('#thanks').attr({display: 'none'});
+        }
+
+        $("#show_kafka").click(function () {
+            showKafka();
+        });
+        setTimeout(function () {
+            thanks();
+            createConsumerPath();
+            showKafka();
+
+        }, 500);
+    });
+</script>
+<input id="next" type="button" class="button" value="Next" style="float: right;">
+<input id="show_kafka" type="button" class="button" value="Show Kafka" style="float: right;">
+<input id="hide_all" type="button" class="button" value="Hide all" style="float: right;">
+</body>
+</html>

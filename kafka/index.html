@@ -253,8 +253,6 @@
 
     function moveOffset(i = 1) {
         svg.findOne(`#offset-0-0`).animate().move(30 * i, 0);
-        svg.findOne(`#data-flow-offset-0-0_partition-0-9`).animate().move(550 + 30 * i, 75);
-
     }
 
     SVG.on(document, 'DOMContentLoaded', function () {
@@ -299,11 +297,6 @@
             if (end == null) {
                 end = start + 1;
             }
-            // for (let i = 11 - start; i > 11 - end; i--) {
-            //     let select = snap.select(`#partition-0-${i} text`).attr({text: 11-i, y: 28, stroke: 'none'});
-            //     select.animate({stroke: 'red'}, 1000, mina.bounce);
-            // }
-
             for (let i = start; i < end; i++) {
                 let select = snap.select(`#partition-0-${11 - i} text`).attr({text: i, y: 28, x: 20});
                 select.animate({stroke: 'black'}, 1000 * i, mina.linear);
@@ -317,23 +310,11 @@
 
         function showOffset() {
             snap.select(`#offset`).attr({display: ''});
-            let path = {
-                "start": "offset-0-0",
-                "end": [
-                    "partition-0-9"
-                ],
-                "startOffsetX": -25,
-                "startOffsetY": 5,
-                "endOffsetX": 0,
-                "endOffsetY": -5,
-                "attr": {
-                    "fill": "none",
-                    "stroke": "red"
-                }
-            };
-            createPath(svg, path, marker);
+            svg.findOne('#offset-0-0').path('M 20, 30 20, 50')
+                .fill('none')
+                .stroke('red')
+                .marker('end', marker);
         }
-
 
         let exactly_once_steps = [
             [produce.bind(null, 0, 4)],
@@ -371,7 +352,6 @@
 
         function reset() {
             svg.findOne(`#offset-0-0`).animate().move(0, 0);
-            svg.findOne(`#data-flow-offset-0-0_partition-0-9`).animate().move(550, 75);
             restore('consumer-group-1-0-0');
             hideLeaves();
             showKafka();

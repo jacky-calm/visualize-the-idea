@@ -21,34 +21,34 @@
 <body background="#D8FFDC">
 <div class="container-fluid">
     <div class="row">
-        <div id='paper' class="col-md-12">
+        <div id='paper' class="col-md-8">
             <!-- SVG paper -->
         </div>
-        <!--        <div id='pannel' class="col-md-4 bg-light">-->
-        <!--            <div class="container">-->
-        <!--                <div class="row">-->
-        <!--                    <div class="card">-->
-        <!--                        <div class="card-body">-->
-        <!--                            <h5 class="card-title">问题</h5>-->
-        <!--                            <ul class="list-group list-group-flush">-->
-        <!--                                <li class="list-group-item">为什么用pull而不是push</li>-->
-        <!--                                <li class="list-group-item">如何做到 有且仅有一次 的消费</li>-->
-        <!--                            </ul>-->
-        <!--                            <h5 class="card-title">消费者 Consumer 配置</h5>-->
-        <!--                            <ul class="list-group list-group-flush">-->
-        <!--                                <li class="list-group-item">fetch.min.bytes - 在获取poll消息时希望从broker接收的最小数据量. （1 byte）</li>-->
-        <!--                                <li class="list-group-item">max.poll.records - 在获取poll消息时希望从broker接收的最大消息数. （1 byte）</li>-->
-        <!--                                <li class="list-group-item">fetch.max.wait.ms - 取不到fetch.min.bytes时最长等待时间 （500ms）</li>-->
-        <!--                                <li class="list-group-item">heartbeat.interval.ms - 心跳间隔（3s）</li>-->
-        <!--                                <li class="list-group-item">session.timeout.ms - 失去联系而仍被认为还活着的时间 （10s）</li>-->
-        <!--                                <li class="list-group-item">enable.auto.commit - 自动提交 （true）</li>-->
-        <!--                                <li class="list-group-item">auto.offset.reset - 从哪个offset开始取消息 （latest）</li>-->
-        <!--                            </ul>-->
-        <!--                        </div>-->
-        <!--                    </div>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--        </div>-->
+                <div id='pannel' class="col-md-4 bg-light">
+                    <div class="container">
+                        <div class="row">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">问题</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">为什么用pull而不是push</li>
+                                        <li class="list-group-item">如何做到 有且仅有一次 的消费</li>
+                                    </ul>
+                                    <h5 class="card-title">消费者 Consumer 配置</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">fetch.min.bytes - 在获取poll消息时希望从broker接收的最小数据量. （1 byte）</li>
+                                        <li class="list-group-item">max.poll.records - 在获取poll消息时希望从broker接收的最大消息数. （1 byte）</li>
+                                        <li class="list-group-item">fetch.max.wait.ms - 取不到fetch.min.bytes时最长等待时间 （500ms）</li>
+                                        <li class="list-group-item">heartbeat.interval.ms - 心跳间隔（3s）</li>
+                                        <li class="list-group-item">session.timeout.ms - 失去联系而仍被认为还活着的时间 （10s）</li>
+                                        <li class="list-group-item">enable.auto.commit - 自动提交 （true）</li>
+                                        <li class="list-group-item">auto.offset.reset - 从哪个offset开始取消息 （latest）</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
     </div>
     <div class="row">
         <div id='actions' class="col-md-12 bg-light">
@@ -63,10 +63,12 @@
                                 <li class="list-group-item"><a id="at_most_once_next" href="#" class="card-link">At Most
                                     Once Next
                                 </a></li>
-                                <li class="list-group-item"><a id="reset" href="#" class="card-link">Reset
-                                </a></li>
                                 <li class="list-group-item"><a id="exactly_once_next" href="#" class="card-link">Exactly
                                     Once Next
+                                </a></li>
+                                <li class="list-group-item"><a id="reset" href="#" class="card-link">Reset
+                                </a></li>
+                                <li class="list-group-item"><a id="thanks" href="#" class="card-link">Thanks
                                 </a></li>
                             </ul>
                         </div>
@@ -282,6 +284,10 @@
         }
 
         function thanks() {
+            if(snap.select('#thanks') != null) {
+                snap.select('#thanks').attr({display: ''});
+                return;
+            }
             let thanks = snap.text(260, 666, '谢谢观看！ 请帮忙 点赞，转发，or 赞赏。').attr({
                 fill: "red",
                 "font-size": "20px"
@@ -341,9 +347,7 @@
             [show_data_flow.bind(null, ['db-0-3'], [`consumer-group-1-0-1`])],
             [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-8'])],
 
-            [moveOffset.bind(null, -2)],
-
-            [reset]
+            [moveOffset.bind(null, -2)]
         ];
         let exactly_once_next = 0;
 
@@ -372,9 +376,7 @@
             [show_data_flow.bind(null, ['db-0-3'], [`consumer-group-1-0-1`])],
             [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-9'])],
 
-            [moveOffset.bind(null, -1)],
-
-            [reset]
+            [moveOffset.bind(null, -1)]
         ];
         let at_least_once_next = 0;
 
@@ -390,25 +392,19 @@
             [initOffset],
 
             [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-0`])],
-            [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['db-0-4'])],
-            [insert.bind(null, 4)],
-            [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-0`])],
             [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['partition-0-9'])],
             [produce.bind(null, 4, 8)],
             [moveOffset.bind(null, -1)],
-
             [fail.bind(null, 'consumer-group-1-0-0')],
 
             [show.bind(null, 'consumer-group-1-0-1')],
             [show_data_flow.bind(null, ['partition-0-8'], [`consumer-group-1-0-1`])],
-            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['db-0-3'])],
-            [insert.bind(null, 3)],
-            [show_data_flow.bind(null, ['db-0-3'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['db-0-4'])],
+            [insert.bind(null, 4)],
+            [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-1`])],
             [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-8'])],
 
-            [moveOffset.bind(null, -2)],
-
-            [reset]
+            [moveOffset.bind(null, -2)]
         ];
         let at_most_once_next = 0;
 
@@ -422,6 +418,7 @@
         function reset() {
             offset = 3;
             svg.findOne(`#offset-0-0`).animate().move(0, 0);
+            svg.findOne(`#thanks`).attr({display: 'none'});
             svg.find(`.data`).text('');
             restore('consumer-group-1-0-0');
             hideLeaves();
@@ -440,6 +437,9 @@
 
         $("#reset").click(function () {
             reset();
+        });
+        $("#thanks").click(function () {
+            thanks();
         });
         setTimeout(function () {
             hideLeaves();

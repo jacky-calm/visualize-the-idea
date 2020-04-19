@@ -51,18 +51,20 @@
         <!--        </div>-->
     </div>
     <div class="row">
-        <div class="col-md-2 bg-light"></div>
-        <div id='actions' class="col-md-8 bg-light">
+        <div id='actions' class="col-md-12 bg-light">
             <div class="container">
                 <div class="row">
                     <div class="card">
                         <div class="card-body">
                             <ul class="list-group list-group-horizontal-md">
-                                <li class="list-group-item"><a id="show_kafka" href="#" class="card-link">Show Kafka</a>
-                                </li>
-                                <li class="list-group-item"><a id="hide_all" href="#" class="card-link">Hide All</a>
-                                </li>
-                                <li class="list-group-item"><a id="next" href="#" class="card-link">Next
+                                <li class="list-group-item"><a id="exactly_once_next" href="#" class="card-link">Exactly
+                                    Once Next
+                                </a></li>
+                                <li class="list-group-item"><a id="at_least_once_next" href="#" class="card-link">At
+                                    least Once Next
+                                </a></li>
+                                <li class="list-group-item"><a id="at_most_once_next" href="#" class="card-link">At Most
+                                    Once Next
                                 </a></li>
                                 <li class="list-group-item"><a id="reset" href="#" class="card-link">Reset
                                 </a></li>
@@ -72,7 +74,6 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-2 bg-light"></div>
     </div>
 </div>
 <script>
@@ -144,6 +145,7 @@
             snap.select(`#${id} rect`).attr({"stroke-dasharray": "5,5", stroke: 'red'});
         }
     }
+
     function restore(...ids) {
         for (let id of ids) {
             console.log(`fail #${id}`);
@@ -248,11 +250,13 @@
             }
         }
     }
-    function moveOffset(i=1) {
-        svg.findOne(`#offset-0-0`).animate().move(30*i, 0);
-        svg.findOne(`#data-flow-offset-0-0_partition-0-9`).animate().move(550+30*i, 75);
+
+    function moveOffset(i = 1) {
+        svg.findOne(`#offset-0-0`).animate().move(30 * i, 0);
+        svg.findOne(`#data-flow-offset-0-0_partition-0-9`).animate().move(550 + 30 * i, 75);
 
     }
+
     SVG.on(document, 'DOMContentLoaded', function () {
         ["consumer-group1", "db", "topic", "offset"].forEach(file => {
             $.getJSON(`data/exactly-once/${file}.json?${version}`, function (node) {
@@ -330,13 +334,8 @@
             createPath(svg, path, marker);
         }
 
-        function reset() {
-            svg.findOne(`#offset-0-0`).animate().move(0, 0);
-            svg.findOne(`#data-flow-offset-0-0_partition-0-9`).animate().move(550, 75);
-            restore('consumer-group-1-0-0');
 
-        }
-        let steps = [
+        let exactly_once_steps = [
             [produce.bind(null, 0, 4)],
             [showOffset],
 
@@ -360,24 +359,26 @@
             [moveOffset.bind(null, -2)],
 
             [reset]
-            [thanks]
-        ]
-        let stepIndex = 0;
+        ];
+        let exactly_once_next = 0;
 
-        $("#next").click(function () {
-            let step = steps[stepIndex++];
+        $("#exactly_once_next").click(function () {
+            let step = exactly_once_steps[exactly_once_next++];
             for (let i = 0; i < step.length; i++) {
                 step[i]();
             }
         });
 
-        $("#hide_all").click(function () {
+        function reset() {
+            svg.findOne(`#offset-0-0`).animate().move(0, 0);
+            svg.findOne(`#data-flow-offset-0-0_partition-0-9`).animate().move(550, 75);
+            restore('consumer-group-1-0-0');
             hideLeaves();
-            stepIndex = 0;
-        });
+            showKafka();
+            exactly_once_next = 0;
+        }
 
         function showKafka() {
-            stepIndex = 0;
             snap.selectAll('.leaf').attr({display: ''});
             snap.selectAll('.path').attr({display: 'none'});
             snap.select('#partition').attr({display: ''});
@@ -386,9 +387,6 @@
             snap.select('#consumer-group-1-0-1').attr({display: 'none'});
         }
 
-        $("#show_kafka").click(function () {
-            showKafka();
-        });
         $("#reset").click(function () {
             reset();
         });

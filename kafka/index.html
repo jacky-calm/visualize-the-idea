@@ -29,6 +29,11 @@
                 <div class="row">
                     <div class="card">
                         <div class="card-body">
+                            <h5 class="card-title">问题</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">为什么用pull而不是push</li>
+                                <li class="list-group-item">如何做到 有且仅有一次 的消费</li>
+                            </ul>
                             <h5 class="card-title">消费者 Consumer 配置</h5>
                             <ul class="list-group list-group-flush">
                                 <li class="list-group-item">fetch.min.bytes - 在获取poll消息时希望从broker接收的最小数据量. （1 byte）</li>
@@ -38,7 +43,6 @@
                                 <li class="list-group-item">session.timeout.ms - 失去联系而仍被认为还活着的时间 （10s）</li>
                                 <li class="list-group-item">enable.auto.commit - 自动提交 （true）</li>
                                 <li class="list-group-item">auto.offset.reset - 从哪个offset开始取消息 （latest）</li>
-
                             </ul>
                             <ul class="list-group list-group-item-action">
                                 <a href="#" class="list-group-item list-group-item-action active">
@@ -141,14 +145,18 @@
     }
 
     function animate(container, pathId, loop, callback) {
-        let points = svg.findOne(`#${pathId}`).data('points');
-        container.circle(20).attr({cx: points[0], cy: points[1]}).fill('green')
-            .id('circle-' + pathId)
-            .animate(2500, 100, 'now')
-            .move(points[2] - 10, points[3] - 10)
-            .loop(Number.MAX_SAFE_INTEGER, false, Math.random() * 2000)
-        // .loop(1, false, 200)
-        ;
+        let d = $(`#${pathId}`).data('d');
+        let move = snap.path(d).attr({fill: "none", stroke: "none", opacity: "1"});
+        let points = $(`#${pathId}`).data('points');
+        let circle = snap.circle(points[0], points[1], 10);
+        circle.attr({
+            fill: 'green',
+            id: 'circle-' + pathId,
+            stroke: "green",
+            strokeWidth: 2
+        });
+        circle.drawAtPath(move, 1000, {callback: callback});
+        container.add(svg.findOne('#circle-' + pathId));
     }
 
     function createPath(container, path, marker) {
@@ -161,12 +169,19 @@
             let group = container.group().id(`data-flow-${pathId}`).addClass('leaf path');
             group.path(data).id(id)
                 .fill('none')
-                .stroke({width: 1, color: 'blue'})
+                .attr(path.attr)
                 .marker('end', marker)
                 .data('points', [startX, startY, endX, endY])
                 .data('d', data);
+
             animate(group, pathId);
         }
+    }
+
+    function createSinglePath(container, path) {
+        let clonePath = {...path};
+        clonePath.end = [path.end];
+        createPath(container, clonePath, marker);
     }
 
     function createMatrixGroup(container, data) {
@@ -201,7 +216,11 @@
                     let nodeReplica = JSON.parse(JSON.stringify(data));
                     nodeReplica.group.transform.translateX += nodeReplica.shape.matrix.column.offset * j;
                     nodeReplica.group.transform.translateY += nodeReplica.shape.matrix.row.offset * i;
-                    nodeReplica.label.text = nodeReplica.label.text.replace("{}", j);
+                    if (nodeReplica.label.sort=='desc') {
+                        nodeReplica.label.text = nodeReplica.label.text.replace("{}", matrix.column.count-j-1);
+                    } else {
+                        nodeReplica.label.text = nodeReplica.label.text.replace("{}", j);
+                    }
                     nodeReplica.group.id = nodeReplica.group.id.replace("{row}", i).replace("{column}", j);
                     createNode(row, nodeReplica);
                 }
@@ -209,73 +228,17 @@
         }
     }
 
-    function createMatricPath(starts, ends, pathId, offset, mapping) {
-        let container = svg.group().id(`paths-${pathId}`);
-        for (let i = starts.range[0]; i < starts.range[1]; i++) {
-            for (let j = ends.range[0]; j < ends.range[1]; j++) {
-                let path = {
-                    "start": `${starts.pattern}${i}`,
-                    "end": [
-                        `${ends.pattern}${j}`
-                    ]
-                };
-                createPath(container, {...path, ...offset}, marker);
-                if (mapping == 'one-2-one') break;
-            }
-        }
-    }
-
     SVG.on(document, 'DOMContentLoaded', function () {
-        ["consumer-group1", "consumer-group2", "topic"].forEach(file => {
-            $.getJSON(`data/consumer/${file}.json?${version}`, function (node) {
+        ["consumer-group1", "db", "topic"].forEach(file => {
+            $.getJSON(`data/exactly-once/${file}.json?${version}`, function (node) {
                 createMatrix(svg, node);
             });
         });
-
-        function createConsumerPath() {
-            let offset1 = {
-                "startOffsetX": -30,
-                "startOffsetY": 20,
-                "endOffsetX": 60,
-                "endOffsetY": 0
-            };
-            createMatricPath(
-                {pattern: 'partition-0-', range: [0, 4]},
-                {pattern: 'consumer-group-1-0-', range: [0, 1]},
-                'group1-1-consumer',
-                offset1
-            );
-            createMatricPath(
-                {pattern: 'partition-0-', range: [2, 4]},
-                {pattern: 'consumer-group-1-0-', range: [1, 2]},
-                'group1-2-consumer',
-                offset1
-            );
-            createMatricPath(
-                {pattern: 'partition-0-', range: [0, 4]},
-                {pattern: 'consumer-group-1-0-', range: [0, 4]},
-                'group1-4-consumer',
-                offset1
-            );
-            let offset2 = {
-                "startOffsetX": -30,
-                "startOffsetY": -30,
-                "endOffsetX": 60,
-                "endOffsetY": 50
-            };
-            createMatricPath(
-                {pattern: 'partition-0-', range: [0, 2]},
-                {pattern: 'consumer-group-2-0-', range: [0, 1]},
-                'group2-1-consumer',
-                offset2
-            );
-            createMatricPath(
-                {pattern: 'partition-0-', range: [2, 4]},
-                {pattern: 'consumer-group-2-0-', range: [1, 2]},
-                'group2-2-consumer',
-                offset2
-            );
-        }
+        ["paths-0", "paths-1"].forEach(file => {
+            $.getJSON(`data/exactly-once/${file}.json?${version}`, function (node) {
+                node.forEach(path => createSinglePath(svg, path))
+            });
+        });
 
         function show_data_flow(froms, tos, display = '', mapping = 'full') {
             for (let i = 0; i < froms.length; i++) {
@@ -355,9 +318,8 @@
             showKafka();
         });
         setTimeout(function () {
-            thanks();
-            createConsumerPath();
-            showKafka();
+            // thanks();
+            // showKafka();
 
         }, 500);
     });

@@ -234,7 +234,7 @@
                 createMatrix(svg, node);
             });
         });
-        ["paths-0", "paths-1"].forEach(file => {
+        ["paths-0", "paths-1", "paths-2", "paths-3"].forEach(file => {
             $.getJSON(`data/exactly-once/${file}.json?${version}`, function (node) {
                 node.forEach(path => createSinglePath(svg, path))
             });

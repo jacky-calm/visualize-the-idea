@@ -1,14 +1,14 @@
 [
   {
-    "start": "partition-0-8",
+    "start": "partition-0-9",
     "end": [
       "consumer-group-1-0-1"
-  ],
+    ],
     "startOffsetX": -35,
     "startOffsetY": 15,
     "endOffsetX": 40,
     "endOffsetY": 0,
-    "curve": "Q450,200",
+    "curve": "Q480,200",
     "attr": {
       "stroke": "blue",
       "fill": "none"
@@ -17,7 +17,7 @@
   {
     "start": "consumer-group-1-0-1",
     "end": [
-      "partition-0-8"
+      "partition-0-9"
     ],
     "startOffsetX": -25,
     "startOffsetY": -20,

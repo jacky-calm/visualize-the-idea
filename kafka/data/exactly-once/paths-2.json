@@ -33,20 +33,20 @@
   {
     "start": "consumer-group-1-0-1",
     "end": [
-      "db-0-3"
+      "db-0-4"
     ],
     "startOffsetX": -30,
     "startOffsetY": 20,
     "endOffsetX": 40,
     "endOffsetY": 0,
-    "curve": "Q420,400",
+    "curve": "Q450,450",
     "attr": {
       "stroke": "blue",
       "fill": "none"
     }
   },
   {
-    "start": "db-0-3",
+    "start": "db-0-4",
     "end": [
       "consumer-group-1-0-1"
     ],
@@ -54,7 +54,7 @@
     "startOffsetY": -30,
     "endOffsetX": 90,
     "endOffsetY": 50,
-    "curve": "Q550,450",
+    "curve": "Q600,450",
     "attr": {
       "stroke": "blue",
       "fill": "none",

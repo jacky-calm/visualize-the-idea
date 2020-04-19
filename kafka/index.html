@@ -251,10 +251,6 @@
         }
     }
 
-    function moveOffset(i = 1) {
-        svg.findOne(`#offset-0-0`).animate().move(30 * i, 0);
-    }
-
     SVG.on(document, 'DOMContentLoaded', function () {
         ["consumer-group1", "db", "topic", "offset"].forEach(file => {
             $.getJSON(`data/exactly-once/${file}.json?${version}`, function (node) {
@@ -293,22 +289,30 @@
             snap.g(thanks).attr({id: "thanks"})
         }
 
+        let offset = 3;
+
         function produce(start, end) {
             if (end == null) {
                 end = start + 1;
             }
             for (let i = start; i < end; i++) {
-                let select = snap.select(`#partition-0-${11 - i} text`).attr({text: i, y: 28, x: 20});
+                let select = snap.select(`#partition-0-${11 - i} text`).attr({text: i, y: 28, x: 20}).addClass('data');
                 select.animate({stroke: 'black'}, 1000 * i, mina.linear);
             }
         }
 
         function insert(i) {
-            let select = snap.select(`#db-0-${i} text`).attr({text: `row1, 3`, y: 28, x: 20});
+            let select = snap.select(`#db-0-${i} text`).attr({text: `row${5-i}, ${offset}`, y: 28, x: 20}).addClass('data');
             select.animate({stroke: 'black'}, 1000, mina.linear);
         }
 
-        function showOffset() {
+        function moveOffset(i = 1) {
+            offset -= i;
+            svg.findOne(`#offset-0-0`).animate().move(30 * i, 0);
+        }
+
+        function initOffset() {
+            offset = 3;
             snap.select(`#offset`).attr({display: ''});
             svg.findOne('#offset-0-0').path('M 20, 30 20, 50')
                 .fill('none')
@@ -318,7 +322,7 @@
 
         let exactly_once_steps = [
             [produce.bind(null, 0, 4)],
-            [showOffset],
+            [initOffset],
 
             [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-0`])],
             [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['db-0-4'])],
@@ -351,7 +355,9 @@
         });
 
         function reset() {
+            offset = 3;
             svg.findOne(`#offset-0-0`).animate().move(0, 0);
+            svg.find(`.data`).text('');
             restore('consumer-group-1-0-0');
             hideLeaves();
             showKafka();

@@ -229,7 +229,7 @@
     }
 
     SVG.on(document, 'DOMContentLoaded', function () {
-        ["consumer-group1", "db", "topic"].forEach(file => {
+        ["consumer-group1", "db", "topic", "offset"].forEach(file => {
             $.getJSON(`data/exactly-once/${file}.json?${version}`, function (node) {
                 createMatrix(svg, node);
             });

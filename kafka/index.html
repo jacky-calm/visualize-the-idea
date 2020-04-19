@@ -240,7 +240,11 @@
             }
         }
     }
+    function moveOffset(i=1) {
+        svg.findOne(`#offset-0-0`).animate().move(30*i, 0);
+        svg.findOne(`#data-flow-offset-0-0_partition-0-9`).animate().move(550+30*i, 75);
 
+    }
     SVG.on(document, 'DOMContentLoaded', function () {
         ["consumer-group1", "db", "topic", "offset"].forEach(file => {
             $.getJSON(`data/exactly-once/${file}.json?${version}`, function (node) {
@@ -318,16 +322,30 @@
             createPath(svg, path, marker);
         }
 
+
+
         let steps = [
             [produce.bind(null, 0, 4)],
             [showOffset],
+            [moveOffset.bind(null, 1)],
+            [moveOffset.bind(null, 2)],
+            [moveOffset.bind(null, -1)],
             [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-0`])],
             [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['db-0-4'])],
             [insert.bind(null, 4)],
             [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-0`])],
             [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['partition-0-9'])],
             [produce.bind(null, 4, 8)],
-            [show.bind(null, 'offset')],
+
+            [moveOffset.bind(null, 1)],
+            [show.bind(null, 'consumer-group-1-0-1')],
+            [show_data_flow.bind(null, ['partition-0-8'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['db-0-3'])],
+            [insert.bind(null, 3)],
+            [show_data_flow.bind(null, ['db-0-3'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-8'])],
+
+            [moveOffset.bind(null, 1)],
 
             [thanks]
         ]

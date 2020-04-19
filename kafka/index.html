@@ -276,7 +276,7 @@
         }
 
         function thanks() {
-            let thanks = snap.text(200, 666, '谢谢观看！ 请帮忙 点赞，转发，or 赞赏。').attr({
+            let thanks = snap.text(260, 666, '谢谢观看！ 请帮忙 点赞，转发，or 赞赏。').attr({
                 fill: "red",
                 "font-size": "20px"
             });
@@ -322,22 +322,20 @@
             createPath(svg, path, marker);
         }
 
-
-
         let steps = [
             [produce.bind(null, 0, 4)],
             [showOffset],
-            [moveOffset.bind(null, 1)],
-            [moveOffset.bind(null, 2)],
-            [moveOffset.bind(null, -1)],
+
             [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-0`])],
             [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['db-0-4'])],
             [insert.bind(null, 4)],
             [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-0`])],
             [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['partition-0-9'])],
             [produce.bind(null, 4, 8)],
+            [moveOffset.bind(null, -1)],
 
-            [moveOffset.bind(null, 1)],
+            [fail.bind(null, 'consumer-group-1-0-0')],
+
             [show.bind(null, 'consumer-group-1-0-1')],
             [show_data_flow.bind(null, ['partition-0-8'], [`consumer-group-1-0-1`])],
             [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['db-0-3'])],
@@ -345,7 +343,7 @@
             [show_data_flow.bind(null, ['db-0-3'], [`consumer-group-1-0-1`])],
             [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-8'])],
 
-            [moveOffset.bind(null, 1)],
+            [moveOffset.bind(null, -2)],
 
             [thanks]
         ]

@@ -10,7 +10,7 @@
     "endOffsetY": 0,
     "curve": "Q450,200",
     "attr": {
-      "stroke": "blue",
+      "stroke": "green",
       "fill": "none"
     }
   },
@@ -27,7 +27,7 @@
     "attr": {
       "stroke-dasharray": "5,5",
       "fill": "none",
-      "stroke": "blue"
+      "stroke": "green"
     }
   },
   {
@@ -39,9 +39,9 @@
     "startOffsetY": 20,
     "endOffsetX": 40,
     "endOffsetY": 0,
-    "curve": "Q420,400",
+    "curve": "Q450,400",
     "attr": {
-      "stroke": "blue",
+      "stroke": "green",
       "fill": "none"
     }
   },
@@ -54,9 +54,9 @@
     "startOffsetY": -30,
     "endOffsetX": 90,
     "endOffsetY": 50,
-    "curve": "Q550,450",
+    "curve": "Q590,450",
     "attr": {
-      "stroke": "blue",
+      "stroke": "green",
       "fill": "none",
       "stroke-dasharray": "5,5"
     }

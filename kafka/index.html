@@ -21,35 +21,47 @@
 <body background="#D8FFDC">
 <div class="container-fluid">
     <div class="row">
-        <div id='paper' class="col-md-8">
+        <div id='paper' class="col-md-12">
             <!-- SVG paper -->
         </div>
-        <div id='pannel' class="col-md-4 bg-light">
+        <!--        <div id='pannel' class="col-md-4 bg-light">-->
+        <!--            <div class="container">-->
+        <!--                <div class="row">-->
+        <!--                    <div class="card">-->
+        <!--                        <div class="card-body">-->
+        <!--                            <h5 class="card-title">问题</h5>-->
+        <!--                            <ul class="list-group list-group-flush">-->
+        <!--                                <li class="list-group-item">为什么用pull而不是push</li>-->
+        <!--                                <li class="list-group-item">如何做到 有且仅有一次 的消费</li>-->
+        <!--                            </ul>-->
+        <!--                            <h5 class="card-title">消费者 Consumer 配置</h5>-->
+        <!--                            <ul class="list-group list-group-flush">-->
+        <!--                                <li class="list-group-item">fetch.min.bytes - 在获取poll消息时希望从broker接收的最小数据量. （1 byte）</li>-->
+        <!--                                <li class="list-group-item">max.poll.records - 在获取poll消息时希望从broker接收的最大消息数. （1 byte）</li>-->
+        <!--                                <li class="list-group-item">fetch.max.wait.ms - 取不到fetch.min.bytes时最长等待时间 （500ms）</li>-->
+        <!--                                <li class="list-group-item">heartbeat.interval.ms - 心跳间隔（3s）</li>-->
+        <!--                                <li class="list-group-item">session.timeout.ms - 失去联系而仍被认为还活着的时间 （10s）</li>-->
+        <!--                                <li class="list-group-item">enable.auto.commit - 自动提交 （true）</li>-->
+        <!--                                <li class="list-group-item">auto.offset.reset - 从哪个offset开始取消息 （latest）</li>-->
+        <!--                            </ul>-->
+        <!--                        </div>-->
+        <!--                    </div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+    </div>
+    <div class="row">
+        <div class="col-md-4 bg-light"></div>
+        <div id='actions' class="col-md-4 bg-light">
             <div class="container">
                 <div class="row">
                     <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">问题</h5>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">为什么用pull而不是push</li>
-                                <li class="list-group-item">如何做到 有且仅有一次 的消费</li>
-                            </ul>
-                            <h5 class="card-title">消费者 Consumer 配置</h5>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item">fetch.min.bytes - 在获取poll消息时希望从broker接收的最小数据量. （1 byte）</li>
-                                <li class="list-group-item">max.poll.records - 在获取poll消息时希望从broker接收的最大消息数. （1 byte）</li>
-                                <li class="list-group-item">fetch.max.wait.ms - 取不到fetch.min.bytes时最长等待时间 （500ms）</li>
-                                <li class="list-group-item">heartbeat.interval.ms - 心跳间隔（3s）</li>
-                                <li class="list-group-item">session.timeout.ms - 失去联系而仍被认为还活着的时间 （10s）</li>
-                                <li class="list-group-item">enable.auto.commit - 自动提交 （true）</li>
-                                <li class="list-group-item">auto.offset.reset - 从哪个offset开始取消息 （latest）</li>
-                            </ul>
-                            <ul class="list-group list-group-item-action">
-                                <a href="#" class="list-group-item list-group-item-action active">
-                                    Actions
-                                </a>
-                                <li class="list-group-item"><a id="show_kafka" href="#" class="card-link">Show Kafka</a></li>
-                                <li class="list-group-item"><a id="hide_all" href="#" class="card-link">Hide All</a></li>
+                            <ul class="list-group list-group-horizontal-md">
+                                <li class="list-group-item"><a id="show_kafka" href="#" class="card-link">Show Kafka</a>
+                                </li>
+                                <li class="list-group-item"><a id="hide_all" href="#" class="card-link">Hide All</a>
+                                </li>
                                 <li class="list-group-item"><a id="next" href="#" class="card-link">Next
                                 </a></li>
                             </ul>
@@ -58,6 +70,7 @@
                 </div>
             </div>
         </div>
+        <div class="col-md-4 bg-light"></div>
     </div>
 </div>
 <script>
@@ -144,9 +157,8 @@
         return {startX, startY, endX, endY, data};
     }
 
-    function animate(container, pathId, loop, callback) {
-        let d = $(`#${pathId}`).data('d');
-        let move = snap.path(d).attr({fill: "none", stroke: "none", opacity: "1"});
+    function animate(pathId) {
+        let move = snap.select(`#${pathId}`);
         let points = $(`#${pathId}`).data('points');
         let circle = snap.circle(points[0], points[1], 10);
         circle.attr({
@@ -155,8 +167,11 @@
             stroke: "green",
             strokeWidth: 2
         });
-        circle.drawAtPath(move, 1000, {callback: callback});
-        container.add(svg.findOne('#circle-' + pathId));
+        circle.drawAtPath(move, 1000, {
+            callback: function () {
+                circle.remove();
+            }
+        });
     }
 
     function createPath(container, path, marker) {
@@ -173,8 +188,6 @@
                 .marker('end', marker)
                 .data('points', [startX, startY, endX, endY])
                 .data('d', data);
-
-            animate(group, pathId);
         }
     }
 
@@ -216,8 +229,8 @@
                     let nodeReplica = JSON.parse(JSON.stringify(data));
                     nodeReplica.group.transform.translateX += nodeReplica.shape.matrix.column.offset * j;
                     nodeReplica.group.transform.translateY += nodeReplica.shape.matrix.row.offset * i;
-                    if (nodeReplica.label.sort=='desc') {
-                        nodeReplica.label.text = nodeReplica.label.text.replace("{}", matrix.column.count-j-1);
+                    if (nodeReplica.label.sort == 'desc') {
+                        nodeReplica.label.text = nodeReplica.label.text.replace("{}", matrix.column.count - j - 1);
                     } else {
                         nodeReplica.label.text = nodeReplica.label.text.replace("{}", j);
                     }
@@ -248,6 +261,7 @@
                     snap.select(`#${from}`).attr({display: ''});
                     snap.select(`#${to}`).attr({display: ''});
                     snap.select(`#data-flow-${from}_${to}`).attr({display: display});
+                    animate(`${from}_${to}`);
                     if (mapping = 'one-2-one') break;
                 }
             }
@@ -258,37 +272,63 @@
         }
 
         function thanks() {
-            let thanks = snap.text(200, 666, '您的 点赞，转发，or 赞赏 都是对我的最大支持。更多精品制作中 ... ').attr({
+            let thanks = snap.text(200, 666, '谢谢观看！ 请帮忙 点赞，转发，or 赞赏。').attr({
                 fill: "red",
                 "font-size": "20px"
-            })
+            });
             snap.g(thanks).attr({id: "thanks"})
         }
 
-        let steps = [
-            [show.bind(null, 'consumer-group-1'), hide.bind(null, 'consumer-group-1-0-1', 'consumer-group-1-0-2', 'consumer-group-1-0-3')],
-            [show_data_flow.bind(null, ['partition-0-0', 'partition-0-1', 'partition-0-2', 'partition-0-3'], [`consumer-group-1-0-0`])],
-            [show.bind(null, 'consumer-group-1-0-1')],
-            [show_data_flow.bind(null, ['partition-0-2', 'partition-0-3'], [`consumer-group-1-0-0`], 'none')],
-            [show_data_flow.bind(null, ['partition-0-2', 'partition-0-3'], [`consumer-group-1-0-1`])],
-            [show.bind(null, 'consumer-group-1-0-2', 'consumer-group-1-0-3')],
+        function produce(start, end) {
+            if (end == null) {
+                end = start + 1;
+            }
+            // for (let i = 11 - start; i > 11 - end; i--) {
+            //     let select = snap.select(`#partition-0-${i} text`).attr({text: 11-i, y: 28, stroke: 'none'});
+            //     select.animate({stroke: 'red'}, 1000, mina.bounce);
+            // }
 
-            // four consumers
-            [show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-0`], 'none')],
-            [show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-2`])],
-            [show_data_flow.bind(null, ['partition-0-3'], [`consumer-group-1-0-1`], 'none')],
-            [show_data_flow.bind(null, ['partition-0-3'], [`consumer-group-1-0-3`])],
-            // consumer 2 failed
-            [
-                fail.bind(null, 'consumer-group-1-0-2'),
-                show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-2`], 'none')
-            ],
-            [
-                show_data_flow.bind(null, ['partition-0-1'], [`consumer-group-1-0-0`], ''),
-            ],
-            [show.bind(null, 'consumer-group-2')],
-            [show_data_flow.bind(null, ['partition-0-0', 'partition-0-1'], [`consumer-group-2-0-0`])],
-            [show_data_flow.bind(null, ['partition-0-2', 'partition-0-3'], [`consumer-group-2-0-1`])],
+            for (let i = start; i < end; i++) {
+                let select = snap.select(`#partition-0-${11 - i} text`).attr({text: i, y: 28, x: 20});
+                select.animate({stroke: 'black'}, 1000 * i, mina.linear);
+            }
+        }
+
+        function insert(i) {
+            let select = snap.select(`#db-0-${i} text`).attr({text: `row1, 3`, y: 28, x: 20});
+            select.animate({stroke: 'black'}, 1000, mina.linear);
+        }
+
+        function showOffset() {
+            snap.select(`#offset`).attr({display: ''});
+            let path = {
+                "start": "offset-0-0",
+                "end": [
+                    "partition-0-9"
+                ],
+                "startOffsetX": -25,
+                "startOffsetY": 5,
+                "endOffsetX": 0,
+                "endOffsetY": -5,
+                "attr": {
+                    "fill": "none",
+                    "stroke": "red"
+                }
+            };
+            createPath(svg, path, marker);
+        }
+
+        let steps = [
+            [produce.bind(null, 0, 4)],
+            [showOffset],
+            [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-0`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['db-0-4'])],
+            [insert.bind(null, 4)],
+            [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-0`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['partition-0-9'])],
+            [produce.bind(null, 4, 8)],
+            [show.bind(null, 'offset')],
+
             [thanks]
         ]
         let stepIndex = 0;
@@ -309,18 +349,18 @@
             stepIndex = 0;
             snap.selectAll('.leaf').attr({display: ''});
             snap.selectAll('.path').attr({display: 'none'});
-            snap.select('#consumer-group-1').attr({display: 'none'});
-            snap.select('#consumer-group-2').attr({display: 'none'});
-            svg.findOne('#thanks').attr({display: 'none'});
+            snap.select('#partition').attr({display: ''});
+            snap.select('#consumer-group-1').attr({display: ''});
+            snap.select('#offset').attr({display: 'none'});
+            snap.select('#consumer-group-1-0-1').attr({display: 'none'});
         }
 
         $("#show_kafka").click(function () {
             showKafka();
         });
         setTimeout(function () {
-            // thanks();
-            // showKafka();
-
+            hideLeaves();
+            showKafka();
         }, 500);
     });
 </script>

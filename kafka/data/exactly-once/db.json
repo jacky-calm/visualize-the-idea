@@ -3,13 +3,13 @@
     "id": "db-{row}-{column}",
     "name": "db",
     "transform": {
-      "translateX": 200,
+      "translateX": 290,
       "translateY": 500
     },
     "width": 70,
     "height": 28,
     "border": {
-      "width": 600,
+      "width": 370,
       "height": 60,
       "attr": {
         "stroke": "none",
@@ -32,13 +32,13 @@
         "offset": 28
       },
       "column": {
-        "count": 8,
+        "count": 5,
         "offset": 70
       }
     }
   },
   "label": {
-    "text": "{}",
+    "text": "",
     "sort": "desc",
     "attributes": {
       "x": 16,

@@ -3,7 +3,7 @@
     "id": "offset-{row}-{column}",
     "name": "offset",
     "transform": {
-      "translateX": 520,
+      "translateX": 528,
       "translateY": 40
     },
     "width": 50,

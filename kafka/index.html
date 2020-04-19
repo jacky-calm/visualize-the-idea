@@ -21,21 +21,34 @@
 <body background="#D8FFDC">
 <div class="container-fluid">
     <div class="row">
-        <div id='paper' class="col-md-9">
+        <div id='paper' class="col-md-8">
             <!-- SVG paper -->
         </div>
-        <div id='pannel' class="col-md-3 bg-light">
+        <div id='pannel' class="col-md-4 bg-light">
             <div class="container">
                 <div class="row">
-                    <div class="card" style="width: 18rem;">
+                    <div class="card">
                         <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <h6 class="card-subtitle mb-2 text-muted">Card subtitle</h6>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk
-                                of the card's content.</p>
-                            <a id="show_kafka" href="#" class="card-link">Show Kafka</a>
-                            <a id="hide_all" href="#" class="card-link">Hide All</a>
-                            <a id="next" href="#" class="card-link">Next</a>
+                            <h5 class="card-title">消费者 Consumer 配置</h5>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">fetch.min.bytes - 在获取poll消息时希望从broker接收的最小数据量. （1 byte）</li>
+                                <li class="list-group-item">max.poll.records - 在获取poll消息时希望从broker接收的最大消息数. （1 byte）</li>
+                                <li class="list-group-item">fetch.max.wait.ms - 取不到fetch.min.bytes时最长等待时间 （500ms）</li>
+                                <li class="list-group-item">heartbeat.interval.ms - 心跳间隔（3s）</li>
+                                <li class="list-group-item">session.timeout.ms - 失去联系而仍被认为还活着的时间 （10s）</li>
+                                <li class="list-group-item">enable.auto.commit - 自动提交 （true）</li>
+                                <li class="list-group-item">auto.offset.reset - 从哪个offset开始取消息 （latest）</li>
+
+                            </ul>
+                            <ul class="list-group list-group-item-action">
+                                <a href="#" class="list-group-item list-group-item-action active">
+                                    Actions
+                                </a>
+                                <li class="list-group-item"><a id="show_kafka" href="#" class="card-link">Show Kafka</a></li>
+                                <li class="list-group-item"><a id="hide_all" href="#" class="card-link">Hide All</a></li>
+                                <li class="list-group-item"><a id="next" href="#" class="card-link">Next
+                                </a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>

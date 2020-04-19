@@ -57,9 +57,6 @@
                     <div class="card">
                         <div class="card-body">
                             <ul class="list-group list-group-horizontal-md">
-                                <li class="list-group-item"><a id="exactly_once_next" href="#" class="card-link">Exactly
-                                    Once Next
-                                </a></li>
                                 <li class="list-group-item"><a id="at_least_once_next" href="#" class="card-link">At
                                     least Once Next
                                 </a></li>
@@ -67,6 +64,9 @@
                                     Once Next
                                 </a></li>
                                 <li class="list-group-item"><a id="reset" href="#" class="card-link">Reset
+                                </a></li>
+                                <li class="list-group-item"><a id="exactly_once_next" href="#" class="card-link">Exactly
+                                    Once Next
                                 </a></li>
                             </ul>
                         </div>
@@ -349,6 +349,71 @@
 
         $("#exactly_once_next").click(function () {
             let step = exactly_once_steps[exactly_once_next++];
+            for (let i = 0; i < step.length; i++) {
+                step[i]();
+            }
+        });
+
+        let at_least_once_steps = [
+            [produce.bind(null, 0, 4)],
+            [initOffset],
+
+            [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-0`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['db-0-4'])],
+            [insert.bind(null, 4)],
+            [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-0`])],
+            [fail.bind(null, 'consumer-group-1-0-0')],
+            [produce.bind(null, 4, 8)],
+
+            [show.bind(null, 'consumer-group-1-0-1')],
+            [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['db-0-3'])],
+            [insert.bind(null, 3)],
+            [show_data_flow.bind(null, ['db-0-3'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-9'])],
+
+            [moveOffset.bind(null, -1)],
+
+            [reset]
+        ];
+        let at_least_once_next = 0;
+
+        $("#at_least_once_next").click(function () {
+            let step = at_least_once_steps[at_least_once_next++];
+            for (let i = 0; i < step.length; i++) {
+                step[i]();
+            }
+        });
+
+        let at_most_once_steps = [
+            [produce.bind(null, 0, 4)],
+            [initOffset],
+
+            [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-0`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['db-0-4'])],
+            [insert.bind(null, 4)],
+            [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-0`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['partition-0-9'])],
+            [produce.bind(null, 4, 8)],
+            [moveOffset.bind(null, -1)],
+
+            [fail.bind(null, 'consumer-group-1-0-0')],
+
+            [show.bind(null, 'consumer-group-1-0-1')],
+            [show_data_flow.bind(null, ['partition-0-8'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['db-0-3'])],
+            [insert.bind(null, 3)],
+            [show_data_flow.bind(null, ['db-0-3'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-8'])],
+
+            [moveOffset.bind(null, -2)],
+
+            [reset]
+        ];
+        let at_most_once_next = 0;
+
+        $("#at_most_once_next").click(function () {
+            let step = at_most_once_steps[at_most_once_next++];
             for (let i = 0; i < step.length; i++) {
                 step[i]();
             }

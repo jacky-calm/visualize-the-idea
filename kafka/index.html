@@ -51,8 +51,8 @@
         <!--        </div>-->
     </div>
     <div class="row">
-        <div class="col-md-4 bg-light"></div>
-        <div id='actions' class="col-md-4 bg-light">
+        <div class="col-md-2 bg-light"></div>
+        <div id='actions' class="col-md-8 bg-light">
             <div class="container">
                 <div class="row">
                     <div class="card">
@@ -64,13 +64,15 @@
                                 </li>
                                 <li class="list-group-item"><a id="next" href="#" class="card-link">Next
                                 </a></li>
+                                <li class="list-group-item"><a id="reset" href="#" class="card-link">Reset
+                                </a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-4 bg-light"></div>
+        <div class="col-md-2 bg-light"></div>
     </div>
 </div>
 <script>
@@ -140,6 +142,12 @@
         for (let id of ids) {
             console.log(`fail #${id}`);
             snap.select(`#${id} rect`).attr({"stroke-dasharray": "5,5", stroke: 'red'});
+        }
+    }
+    function restore(...ids) {
+        for (let id of ids) {
+            console.log(`fail #${id}`);
+            snap.select(`#${id} rect`).attr({"stroke-dasharray": "", stroke: 'blue'});
         }
     }
 
@@ -322,6 +330,12 @@
             createPath(svg, path, marker);
         }
 
+        function reset() {
+            svg.findOne(`#offset-0-0`).animate().move(0, 0);
+            svg.findOne(`#data-flow-offset-0-0_partition-0-9`).animate().move(550, 75);
+            restore('consumer-group-1-0-0');
+
+        }
         let steps = [
             [produce.bind(null, 0, 4)],
             [showOffset],
@@ -345,6 +359,7 @@
 
             [moveOffset.bind(null, -2)],
 
+            [reset]
             [thanks]
         ]
         let stepIndex = 0;
@@ -373,6 +388,9 @@
 
         $("#show_kafka").click(function () {
             showKafka();
+        });
+        $("#reset").click(function () {
+            reset();
         });
         setTimeout(function () {
             hideLeaves();

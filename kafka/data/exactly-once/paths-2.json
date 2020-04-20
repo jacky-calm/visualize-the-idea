@@ -39,7 +39,7 @@
     "startOffsetY": 20,
     "endOffsetX": 40,
     "endOffsetY": 0,
-    "curve": "Q450,450",
+    "curve": "Q500,450",
     "attr": {
       "stroke": "blue",
       "fill": "none"
@@ -54,7 +54,7 @@
     "startOffsetY": -30,
     "endOffsetX": 90,
     "endOffsetY": 50,
-    "curve": "Q600,450",
+    "curve": "Q650,450",
     "attr": {
       "stroke": "blue",
       "fill": "none",

@@ -288,8 +288,8 @@
                 snap.select('#thanks').attr({display: ''});
                 return;
             }
-            let thanks = snap.text(260, 666, '谢谢观看！ 请帮忙 点赞，转发，or 赞赏。').attr({
-                fill: "red",
+            let thanks = snap.text(300, 666, 'Vizit 制作， 谢谢关注，点赞 和 转发。').attr({
+                fill: "green",
                 "font-size": "20px"
             });
             snap.g(thanks).attr({id: "thanks"})
@@ -308,7 +308,7 @@
         }
 
         function insert(i) {
-            let select = snap.select(`#db-0-${i} text`).attr({text: `row${5-i}, ${offset}`, y: 28, x: 20}).addClass('data');
+            let select = snap.select(`#db-0-${i} text`).attr({text: `row${5-i}, ${offset}`, y: 28, x: 20}).addClass('data');//, ${offset}
             select.animate({stroke: 'black'}, 1000, mina.linear);
         }
 
@@ -352,10 +352,15 @@
         let exactly_once_next = 0;
 
         $("#exactly_once_next").click(function () {
-            let step = exactly_once_steps[exactly_once_next++];
-            for (let i = 0; i < step.length; i++) {
-                step[i]();
+            for (let j = 0; j < exactly_once_steps.length; j++) {
+                let step = exactly_once_steps[j];
+                for (let i = 0; i < step.length; i++) {
+                    setTimeout(function () {
+                        step[i]();
+                    }, 500*(i+1)*(j+1));
+                }
             }
+
         });
 
         let at_least_once_steps = [
@@ -399,12 +404,12 @@
 
             [show.bind(null, 'consumer-group-1-0-1')],
             [show_data_flow.bind(null, ['partition-0-8'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-8'])],
+            [moveOffset.bind(null, -2)],
             [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['db-0-4'])],
             [insert.bind(null, 4)],
-            [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-1`])],
-            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-8'])],
 
-            [moveOffset.bind(null, -2)]
+            [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-1`])]
         ];
         let at_most_once_next = 0;
 
@@ -418,12 +423,14 @@
         function reset() {
             offset = 3;
             svg.findOne(`#offset-0-0`).animate().move(0, 0);
-            svg.findOne(`#thanks`).attr({display: 'none'});
+            // svg.findOne(`#thanks`).attr({display: 'none'});
             svg.find(`.data`).text('');
             restore('consumer-group-1-0-0');
             hideLeaves();
             showKafka();
             exactly_once_next = 0;
+            at_least_once_next = 0;
+            at_most_once_next = 0;
         }
 
         function showKafka() {
@@ -444,6 +451,7 @@
         setTimeout(function () {
             hideLeaves();
             showKafka();
+            thanks();
         }, 500);
     });
 </script>

@@ -1,0 +1,71 @@
+[
+  {
+    "group": {
+      "id": "broker1",
+      "transform": {
+        "translateX": 170,
+        "translateY": 200
+      }
+    },
+    "shape": {
+      "type": "rect",
+      "attributes": {
+        "x": 10,
+        "y": 10
+      }
+    },
+    "label": {
+      "text": "broker0",
+      "attributes": {
+        "x": 20,
+        "y": 8
+      }
+    }
+  },
+  {
+    "group": {
+      "id": "broker2",
+      "transform": {
+        "translateX": 170,
+        "translateY": 300
+      }
+    },
+    "shape": {
+      "type": "rect",
+      "attributes": {
+        "x": 10,
+        "y": 10
+      }
+    },
+    "label": {
+      "text": "broker1",
+      "attributes": {
+        "x": 20,
+        "y": 8
+      }
+    }
+  },
+  {
+    "group": {
+      "id": "broker3",
+      "transform": {
+        "translateX": 170,
+        "translateY": 400
+      }
+    },
+    "shape": {
+      "type": "rect",
+      "attributes": {
+        "x": 10,
+        "y": 10
+      }
+    },
+    "label": {
+      "text": "broker2",
+      "attributes": {
+        "x": 20,
+        "y": 8
+      }
+    }
+  }
+]

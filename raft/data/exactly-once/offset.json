@@ -1,0 +1,59 @@
+{
+  "group": {
+    "id": "offset-{row}-{column}",
+    "name": "offset",
+    "transform": {
+      "translateX": 528,
+      "translateY": 40
+    },
+    "width": 50,
+    "height": 28,
+    "border": {
+      "width": 600,
+      "height": 60,
+      "attr": {
+        "stroke": "none",
+        "fill": "none",
+        "opacity": 0.2,
+        "rx": 10,
+        "ry": 10
+      }
+    }
+  },
+  "shape": {
+    "type": "ellipse",
+    "attributes": {
+      "x": 10,
+      "y": 10
+    },
+    "matrix": {
+      "row": {
+        "count": 1,
+        "offset": 28
+      },
+      "column": {
+        "count": 1,
+        "offset": 70
+      }
+    }
+  },
+  "label": {
+    "text": "offset",
+    "sort": "desc",
+    "attributes": {
+      "x": 6,
+      "y": -2
+    }
+  },
+  "title": {
+    "text": "",
+    "attributes": {
+      "x": 16,
+      "y": 8
+    },
+    "offset" : {
+      "x": -80,
+      "y": 0
+    }
+  }
+}

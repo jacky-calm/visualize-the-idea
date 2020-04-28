@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>Vizit</title>
+    <link rel="stylesheet" href="css/style.css?1">
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="node_modules/@svgdotjs/svg.js/dist/svg.js"></script>
+    <script src="node_modules/@svgdotjs/svg.draggable.js/dist/svg.draggable.js"></script>
+    <script src="scripts/snap.svg.js"></script>
+    <script src="http://svg.dabbles.info/animate-object-path.js"></script>
+    <!--    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/2.0.6/velocity.min.js"></script>-->
+
+</head>
+<body background="#D8FFDC">
+<div class="container-fluid">
+    <div class="row">
+        <div id='paper' class="col-md-8">
+            <!-- SVG paper -->
+        </div>
+                <div id='pannel' class="col-md-4 bg-light">
+                    <div class="container">
+                        <div class="row">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">问题</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">为什么用pull而不是push</li>
+                                        <li class="list-group-item">如何做到 有且仅有一次 的消费</li>
+                                    </ul>
+                                    <h5 class="card-title">消费者 Consumer 配置</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item">fetch.min.bytes - 在获取poll消息时希望从broker接收的最小数据量. （1 byte）</li>
+                                        <li class="list-group-item">max.poll.records - 在获取poll消息时希望从broker接收的最大消息数. （1 byte）</li>
+                                        <li class="list-group-item">fetch.max.wait.ms - 取不到fetch.min.bytes时最长等待时间 （500ms）</li>
+                                        <li class="list-group-item">heartbeat.interval.ms - 心跳间隔（3s）</li>
+                                        <li class="list-group-item">session.timeout.ms - 失去联系而仍被认为还活着的时间 （10s）</li>
+                                        <li class="list-group-item">enable.auto.commit - 自动提交 （true）</li>
+                                        <li class="list-group-item">auto.offset.reset - 从哪个offset开始取消息 （latest）</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </div>
+    <div class="row">
+        <div id='actions' class="col-md-12 bg-light">
+            <div class="container">
+                <div class="row">
+                    <div class="card">
+                        <div class="card-body">
+                            <ul class="list-group list-group-horizontal-md">
+                                <li class="list-group-item"><a id="at_least_once_next" href="#" class="card-link">At
+                                    least Once Next
+                                </a></li>
+                                <li class="list-group-item"><a id="at_most_once_next" href="#" class="card-link">At Most
+                                    Once Next
+                                </a></li>
+                                <li class="list-group-item"><a id="exactly_once_next" href="#" class="card-link">Exactly
+                                    Once Next
+                                </a></li>
+                                <li class="list-group-item"><a id="reset" href="#" class="card-link">Reset
+                                </a></li>
+                                <li class="list-group-item"><a id="thanks" href="#" class="card-link">Thanks
+                                </a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // 定义svg对象, 在body里面添加一个svg
+    let svg = SVG().addTo('#paper').attr({width: 1200, height: 750, id: 'svg'});
+    svg.rect(1000, 750).fill("#E3EDCD");
+    var snap = Snap("#svg");
+    // marker: arrow head
+    let marker = svg.marker(13, 13, function (add) {
+        add.path('M2,2 L2,11 L10,6 L2,2').fill('blue').stroke({width: 1, color: 'blue'})
+    }).attr({"refX": "2", "refY": "6", "orient": "auto"});
+    // Set the global configs to synchronous
+    $.ajaxSetup({
+        async: false
+    });
+    let version = Date.now();
+
+    function createNode(container, data) {
+        // 用一个group把节点边框和文本放在一起，这样可以利用group的transform来定义
+        // 整个group里面所有节点的坐标位置
+        let translateX = data.group.transform.translateX;
+        let translateY = data.group.transform.translateY;
+        let label = container.text(data.label.text);
+        // let label = container.text('');
+
+        let width = data.group.width == null ? (data.label.text.length * 8 + 10) : parseInt(data.group.width);
+        let height = data.group.height == null ? 28 : parseInt(data.group.height);
+        let group = container.group()
+            .transform({translateX: translateX, translateY: translateY})
+            .addClass('leaf')
+            .id(data.group.id)
+            .data('leftTopX', translateX)
+            .data('leftTopY', translateY)
+            .data('width', width)
+            .data('height', height)
+        ;
+        // TODO style 的信息暂时hardcode, 后面会用程序控制动态变化的效果。
+        let style = {fill: 'none', stroke: 'blue'};
+        let attributes = {...style, ...data.shape.attributes};
+        // 动态的调用函数，可以支持绘制各种图形，比如:rect, ellipse
+        let rect = container[data.shape.type](width, height).attr(attributes);
+        group.add(rect);
+
+        label.attr(data.label.attributes);
+        group.add(label);
+        return group.draggable(); // 支持拖拽
+    }
+
+    function buildPathId(start, end) {
+        return `${start}_${end}`;
+    }
+
+    function show(...ids) {
+        for (let id of ids) {
+            snap.select(`#${id}`).attr({display: ''});
+        }
+    }
+
+    function hide(...ids) {
+        for (let id of ids) {
+            console.log(`hide #${id}`);
+            snap.select(`#${id}`).attr({display: 'none'});
+        }
+    }
+
+    function fail(...ids) {
+        for (let id of ids) {
+            console.log(`fail #${id}`);
+            snap.select(`#${id} rect`).attr({"stroke-dasharray": "5,5", stroke: 'red'});
+        }
+    }
+
+    function restore(...ids) {
+        for (let id of ids) {
+            console.log(`fail #${id}`);
+            snap.select(`#${id} rect`).attr({"stroke-dasharray": "", stroke: 'blue'});
+        }
+    }
+
+    function buildPath(start, endList, i, path) {
+        let startNode = svg.findOne(`#${start}`);
+        let endNode = svg.findOne(`#${endList[i]}`);
+        let startX = startNode.data('leftTopX') + startNode.data('width') + path.startOffsetX;
+        let startY = startNode.data('leftTopY') + startNode.data('height') + path.startOffsetY;
+        let endX = endNode.data('leftTopX') + path.endOffsetX;
+        let endY = endNode.data('leftTopY') + path.endOffsetY;
+        let data = `M ${startX}, ${startY} ${endX}, ${endY}`;
+        if (path.curve != null) {
+            data = `M ${startX}, ${startY} ${path.curve} ${endX}, ${endY}`;
+        }
+        return {startX, startY, endX, endY, data};
+    }
+
+    function animate(pathId) {
+        let move = snap.select(`#${pathId}`);
+        let points = $(`#${pathId}`).data('points');
+        let circle = snap.circle(points[0], points[1], 10);
+        circle.attr({
+            fill: 'green',
+            id: 'circle-' + pathId,
+            stroke: "green",
+            strokeWidth: 2
+        });
+        circle.drawAtPath(move, 1000, {
+            callback: function () {
+                circle.remove();
+            }
+        });
+    }
+
+    function createPath(container, path, marker) {
+        let start = path.start;
+        let endList = path.end;
+        for (let i = 0; i < endList.length; i++) {
+            let {startX, startY, endX, endY, data} = buildPath(start, endList, i, path);
+            let id = buildPathId(start, endList[i]);
+            let pathId = `${start}_${endList[i]}`;
+            let group = container.group().id(`data-flow-${pathId}`).addClass('leaf path');
+            group.path(data).id(id)
+                .fill('none')
+                .attr(path.attr)
+                .marker('end', marker)
+                .data('points', [startX, startY, endX, endY])
+                .data('d', data);
+        }
+    }
+
+    function createSinglePath(container, path) {
+        let clonePath = {...path};
+        clonePath.end = [path.end];
+        createPath(container, clonePath, marker);
+    }
+
+    function createMatrixGroup(container, data) {
+        let group = container.group().id(data.group.name).addClass('matrix-group');
+        group.rect(
+            data.group.border.width,
+            data.group.border.height)
+            .attr(
+                {
+                    ...{
+                        x: data.group.transform.translateX,
+                        y: data.group.transform.translateY - 5
+                    },
+                    ...data.group.border.attr
+                });
+        group.text(data.title.text).attr({
+            x: data.group.transform.translateX + data.title.offset.x,
+            y: data.group.transform.translateY + data.title.offset.y
+        });
+        return group.addClass('leaf');
+    }
+
+    // a matrix is a group of nodes replicated from data
+    function createMatrix(container, data) {
+        let group = createMatrixGroup(container, data);
+
+        let matrix = data.shape.matrix;
+        if (matrix != null) {
+            for (let i = 0; i < matrix.row.count; i++) {
+                let row = group.group().id(data.group.id.replace("{row}", i).replace("{column}", 'x'));
+                for (let j = 0; j < matrix.column.count; j++) {
+                    let nodeReplica = JSON.parse(JSON.stringify(data));
+                    nodeReplica.group.transform.translateX += nodeReplica.shape.matrix.column.offset * j;
+                    nodeReplica.group.transform.translateY += nodeReplica.shape.matrix.row.offset * i;
+                    if (nodeReplica.label.sort == 'desc') {
+                        nodeReplica.label.text = nodeReplica.label.text.replace("{}", matrix.column.count - j - 1);
+                    } else {
+                        nodeReplica.label.text = nodeReplica.label.text.replace("{}", j);
+                    }
+                    nodeReplica.group.id = nodeReplica.group.id.replace("{row}", i).replace("{column}", j);
+                    createNode(row, nodeReplica);
+                }
+            }
+        }
+    }
+
+    SVG.on(document, 'DOMContentLoaded', function () {
+        ["consumer-group1", "db", "topic", "offset"].forEach(file => {
+            $.getJSON(`data/exactly-once/${file}.json?${version}`, function (node) {
+                createMatrix(svg, node);
+            });
+        });
+        ["paths-0", "paths-1", "paths-2", "paths-3"].forEach(file => {
+            $.getJSON(`data/exactly-once/${file}.json?${version}`, function (node) {
+                node.forEach(path => createSinglePath(svg, path))
+            });
+        });
+
+        function show_data_flow(froms, tos, display = '', mapping = 'full') {
+            for (let i = 0; i < froms.length; i++) {
+                for (let j = 0; j < tos.length; j++) {
+                    let from = froms[i];
+                    let to = tos[j];
+                    snap.select(`#${from}`).attr({display: ''});
+                    snap.select(`#${to}`).attr({display: ''});
+                    snap.select(`#data-flow-${from}_${to}`).attr({display: display});
+                    animate(`${from}_${to}`);
+                    if (mapping = 'one-2-one') break;
+                }
+            }
+        }
+
+        function hideLeaves() {
+            snap.selectAll('.leaf').attr({display: 'none'});
+        }
+
+        function thanks() {
+            if(snap.select('#thanks') != null) {
+                snap.select('#thanks').attr({display: ''});
+                return;
+            }
+            let thanks = snap.text(300, 666, 'Vizit 制作， 谢谢关注，点赞 和 转发。').attr({
+                fill: "green",
+                "font-size": "20px"
+            });
+            snap.g(thanks).attr({id: "thanks"})
+        }
+
+        let offset = 3;
+
+        function produce(start, end) {
+            if (end == null) {
+                end = start + 1;
+            }
+            for (let i = start; i < end; i++) {
+                let select = snap.select(`#partition-0-${11 - i} text`).attr({text: i, y: 28, x: 20}).addClass('data');
+                select.animate({stroke: 'black'}, 1000 * i, mina.linear);
+            }
+        }
+
+        function insert(i) {
+            let select = snap.select(`#db-0-${i} text`).attr({text: `row${5-i}, ${offset}`, y: 28, x: 20}).addClass('data');//, ${offset}
+            select.animate({stroke: 'black'}, 1000, mina.linear);
+        }
+
+        function moveOffset(i = 1) {
+            offset -= i;
+            svg.findOne(`#offset-0-0`).animate().move(30 * i, 0);
+        }
+
+        function initOffset() {
+            offset = 3;
+            snap.select(`#offset`).attr({display: ''});
+            svg.findOne('#offset-0-0').path('M 20, 30 20, 50')
+                .fill('none')
+                .stroke('red')
+                .marker('end', marker);
+        }
+
+        let exactly_once_steps = [
+            [produce.bind(null, 0, 4)],
+            [initOffset],
+
+            [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-0`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['db-0-4'])],
+            [insert.bind(null, 4)],
+            [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-0`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['partition-0-9'])],
+            [produce.bind(null, 4, 8)],
+            [moveOffset.bind(null, -1)],
+
+            [fail.bind(null, 'consumer-group-1-0-0')],
+
+            [show.bind(null, 'consumer-group-1-0-1')],
+            [show_data_flow.bind(null, ['partition-0-8'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['db-0-3'])],
+            [insert.bind(null, 3)],
+            [show_data_flow.bind(null, ['db-0-3'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-8'])],
+
+            [moveOffset.bind(null, -2)]
+        ];
+        let exactly_once_next = 0;
+
+        $("#exactly_once_next").click(function () {
+            for (let j = 0; j < exactly_once_steps.length; j++) {
+                let step = exactly_once_steps[j];
+                for (let i = 0; i < step.length; i++) {
+                    setTimeout(function () {
+                        step[i]();
+                    }, 500*(i+1)*(j+1));
+                }
+            }
+
+        });
+
+        let at_least_once_steps = [
+            [produce.bind(null, 0, 4)],
+            [initOffset],
+
+            [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-0`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['db-0-4'])],
+            [insert.bind(null, 4)],
+            [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-0`])],
+            [fail.bind(null, 'consumer-group-1-0-0')],
+            [produce.bind(null, 4, 8)],
+
+            [show.bind(null, 'consumer-group-1-0-1')],
+            [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['db-0-3'])],
+            [insert.bind(null, 3)],
+            [show_data_flow.bind(null, ['db-0-3'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-9'])],
+
+            [moveOffset.bind(null, -1)]
+        ];
+        let at_least_once_next = 0;
+
+        $("#at_least_once_next").click(function () {
+            let step = at_least_once_steps[at_least_once_next++];
+            for (let i = 0; i < step.length; i++) {
+                step[i]();
+            }
+        });
+
+        let at_most_once_steps = [
+            [produce.bind(null, 0, 4)],
+            [initOffset],
+
+            [show_data_flow.bind(null, ['partition-0-9'], [`consumer-group-1-0-0`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-0`], ['partition-0-9'])],
+            [produce.bind(null, 4, 8)],
+            [moveOffset.bind(null, -1)],
+            [fail.bind(null, 'consumer-group-1-0-0')],
+
+            [show.bind(null, 'consumer-group-1-0-1')],
+            [show_data_flow.bind(null, ['partition-0-8'], [`consumer-group-1-0-1`])],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['partition-0-8'])],
+            [moveOffset.bind(null, -2)],
+            [show_data_flow.bind(null, [`consumer-group-1-0-1`], ['db-0-4'])],
+            [insert.bind(null, 4)],
+
+            [show_data_flow.bind(null, ['db-0-4'], [`consumer-group-1-0-1`])]
+        ];
+        let at_most_once_next = 0;
+
+        $("#at_most_once_next").click(function () {
+            let step = at_most_once_steps[at_most_once_next++];
+            for (let i = 0; i < step.length; i++) {
+                step[i]();
+            }
+        });
+
+        function reset() {
+            offset = 3;
+            svg.findOne(`#offset-0-0`).animate().move(0, 0);
+            // svg.findOne(`#thanks`).attr({display: 'none'});
+            svg.find(`.data`).text('');
+            restore('consumer-group-1-0-0');
+            hideLeaves();
+            showKafka();
+            exactly_once_next = 0;
+            at_least_once_next = 0;
+            at_most_once_next = 0;
+        }
+
+        function showKafka() {
+            snap.selectAll('.leaf').attr({display: ''});
+            snap.selectAll('.path').attr({display: 'none'});
+            snap.select('#partition').attr({display: ''});
+            snap.select('#consumer-group-1').attr({display: ''});
+            snap.select('#offset').attr({display: 'none'});
+            snap.select('#consumer-group-1-0-1').attr({display: 'none'});
+        }
+
+        $("#reset").click(function () {
+            reset();
+        });
+        $("#thanks").click(function () {
+            thanks();
+        });
+        setTimeout(function () {
+            hideLeaves();
+            showKafka();
+            thanks();
+        }, 500);
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+</body>
+</html>

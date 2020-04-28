@@ -1,0 +1,111 @@
+[
+  {
+    "group": {
+      "id": "zookeeper",
+      "transform": {
+        "translateX": 400,
+        "translateY": 300
+      }
+    },
+    "shape": {
+      "type": "rect",
+      "attributes": {
+        "x": 10,
+        "y": 10
+      }
+    },
+    "label": {
+      "text": "zookeeper",
+      "attributes": {
+        "x": 24,
+        "y": 8
+      }
+    }
+  },
+  {
+    "group": {
+      "id": "controller",
+      "transform": {
+        "translateX": 350,
+        "translateY": 80
+      }
+    },
+    "shape": {
+      "type": "rect",
+      "attributes": {
+        "x": 10,
+        "y": 10
+      }
+    },
+    "label": {
+      "text": "/controller (broker0)",
+      "attributes": {
+        "x": 24,
+        "y": 8
+      }
+    }
+  },
+  {
+    "group": {
+      "id": "brokers-ids-1",
+      "transform": {
+        "translateX": 630,
+        "translateY": 200
+      }
+    },
+    "shape": {
+      "type": "ellipse",
+      "attributes": {
+      }
+    },
+    "label": {
+      "text": "/brokers/ids/0",
+      "attributes": {
+        "x": 15,
+        "y": 0
+      }
+    }
+  },
+  {
+    "group": {
+      "id": "brokers-ids-2",
+      "transform": {
+        "translateX": 630,
+        "translateY": 300
+      }
+    },
+    "shape": {
+      "type": "ellipse",
+      "attributes": {
+      }
+    },
+    "label": {
+      "text": "/brokers/ids/1",
+      "attributes": {
+        "x": 15,
+        "y": 0
+      }
+    }
+  },
+  {
+    "group": {
+      "id": "brokers-ids-3",
+      "transform": {
+        "translateX": 630,
+        "translateY": 400
+      }
+    },
+    "shape": {
+      "type": "ellipse",
+      "attributes": {
+      }
+    },
+    "label": {
+      "text": "/brokers/ids/2",
+      "attributes": {
+        "x": 15,
+        "y": 0
+      }
+    }
+  }
+]

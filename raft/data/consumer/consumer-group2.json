@@ -1,0 +1,58 @@
+{
+  "group": {
+    "id": "consumer-group-2-{row}-{column}",
+    "name": "consumer-group-2",
+    "transform": {
+      "translateX": 300,
+      "translateY": 100
+    },
+    "width": 90,
+    "height": 28,
+    "border": {
+      "width": 410,
+      "height": 60,
+      "attr": {
+        "stroke": "#7F46FF",
+        "fill": "#7F46FF",
+        "opacity": 0.2,
+        "rx": 10,
+        "ry": 10
+      }
+    }
+  },
+  "shape": {
+    "type": "rect",
+    "attributes": {
+      "x": 10,
+      "y": 10
+    },
+    "matrix": {
+      "row": {
+        "count": 1,
+        "offset": 0
+      },
+      "column": {
+        "count": 2,
+        "offset": 100
+      }
+    }
+  },
+  "label": {
+    "text": "consumer-{}",
+    "attributes": {
+      "x": 16,
+      "y": 8
+    }
+  },
+  "title": {
+    "text": "consumer group 2",
+    "attributes": {
+      "x": 16,
+      "y": 8
+    },
+    "offset" : {
+      "x": -130,
+      "y": 10
+    }
+  }
+}

@@ -1,0 +1,65 @@
+[
+  {
+    "start": "partition-0-8",
+    "end": [
+      "consumer-group-1-0-1"
+  ],
+    "startOffsetX": -35,
+    "startOffsetY": 15,
+    "endOffsetX": 40,
+    "endOffsetY": 0,
+    "curve": "Q450,200",
+    "attr": {
+      "stroke": "green",
+      "fill": "none"
+    }
+  },
+  {
+    "start": "consumer-group-1-0-1",
+    "end": [
+      "partition-0-8"
+    ],
+    "startOffsetX": -25,
+    "startOffsetY": -20,
+    "endOffsetX": 0,
+    "endOffsetY": 50,
+    "curve": "Q600,260",
+    "attr": {
+      "stroke-dasharray": "5,5",
+      "fill": "none",
+      "stroke": "green"
+    }
+  },
+  {
+    "start": "consumer-group-1-0-1",
+    "end": [
+      "db-0-3"
+    ],
+    "startOffsetX": -30,
+    "startOffsetY": 20,
+    "endOffsetX": 40,
+    "endOffsetY": 0,
+    "curve": "Q500,400",
+    "attr": {
+      "stroke": "green",
+      "fill": "none"
+    }
+  },
+  {
+    "start": "db-0-3",
+    "end": [
+      "consumer-group-1-0-1"
+    ],
+    "startOffsetX": -10,
+    "startOffsetY": -30,
+    "endOffsetX": 90,
+    "endOffsetY": 50,
+    "curve": "Q590,450",
+    "attr": {
+      "stroke": "green",
+      "fill": "none",
+      "stroke-dasharray": "5,5"
+    }
+  }
+
+]

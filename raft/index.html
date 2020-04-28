@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <title>Vizit</title>
+    <link rel="stylesheet" href="css/style.css?1">
+    <script src="node_modules/jquery/dist/jquery.js"></script>
+    <script src="node_modules/@svgdotjs/svg.js/dist/svg.js"></script>
+    <script src="node_modules/@svgdotjs/svg.draggable.js/dist/svg.draggable.js"></script>
+    <script src="scripts/snap.svg.js"></script>
+    <script src="scripts/helper/util.js"></script>
+    <script src="scripts/raft/event_sourcing.js?3"></script>
+    <script src="http://svg.dabbles.info/animate-object-path.js"></script>
+    <!--    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/2.0.6/velocity.min.js"></script>-->
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+    <script>
+    
+        function show() {
+            var s = Snap("#svgout"); 
+            var boat = Snap.load("svg/boat.svg?"+ version, function (loadedFragment) {
+                let g = s.group();
+                g.append(loadedFragment);
+                let boat = s.select("#boat");
+                g.animate({ transform: 't100,100' }, 5000, mina.bounce);
+                
+            });
+            // var r = s.rect(200, 200, 100, 100, 20, 20).attr({ stroke: '#123456', 'strokeWidth': 20, fill: 'red' });
+            // var c = s.circle(150, 150, 50).attr({ stroke: '#123456', 'strokeWidth': 20, fill: 'blue' });
+
+            // var g = s.group(r, c);
+
+            // g.animate({ transform: 't20' }, 5000, mina.bounce);
+
+        }
+        $(document).ready(function () {
+            show();
+        });
+    </script>
+</head>
+
+<body background="#D8FFDC">
+    <div class="container-fluid">
+        <div class="row">
+            <div id='paper' class="col-md-12">
+                <!-- SVG paper -->
+                <svg id="svgout" width="800" height="500"></svg>
+            </div>
+        </div>
+        <div class="row">
+            <div id='actions' class="col-md-12 bg-light">
+                <div class="container">
+                    <div class="row">
+                        <div class="card">
+                            <div class="card-body">
+                                <ul class="list-group list-group-horizontal-md">
+                                    <li class="list-group-item"><a id="at_least_once_next" href="#" class="card-link">At
+                                            least Once Next
+                                        </a></li>
+                                    <li class="list-group-item"><a id="at_most_once_next" href="#" class="card-link">At
+                                            Most
+                                            Once Next
+                                        </a></li>
+                                    <li class="list-group-item"><a id="exactly_once_next" href="#"
+                                            class="card-link">Exactly
+                                            Once Next
+                                        </a></li>
+                                    <li class="list-group-item"><a id="reset" href="#" class="card-link">Reset
+                                        </a></li>
+                                    <li class="list-group-item"><a id="thanks" href="#" class="card-link">Thanks
+                                        </a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

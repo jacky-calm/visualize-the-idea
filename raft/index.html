@@ -97,16 +97,21 @@
                 s.text(225, 115, '事件日志 Event Log');
             });
         }
+
         function show10(s) {
             s.path("m 320 50 h 100").attr({ fill: "none", stroke: "red", opacity: "1" });
             s.text(350, 40, '生成');
             s.path("M 410 40 L 420 50 L 410 60").attr({ fill: "none", stroke: "red", opacity: "1" });
         }
 
+        function show11(s) {
+            s.select('#shopping_car').animate({ transform: 't50,-200s0.1' }, 2000, mina.linear);
+        }
+
         function show0() {
             s = Snap("#svgout");
             Snap.load("svg/shopping_car.svg?" + version, function (loadedFragment) {
-                let g = s.group();
+                let g = s.group().attr({id:'shopping_car'});
                 g.append(loadedFragment);
                 g.transform('t300, 100');
             });
@@ -128,7 +133,7 @@
             });
             $('#all').click(function () {
                 console.log('next');
-                for (let i = 0; i < 11; i++) {
+                for (let i = 0; i < 20; i++) {
                     setTimeout(() => {
                         window["show" + i](s);
                     }, 1000 * i);

@@ -27,23 +27,64 @@
         integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
         crossorigin="anonymous"></script>
     <script>
-    
+
         function show() {
-            var s = Snap("#svgout"); 
-            var boat = Snap.load("svg/boat.svg?"+ version, function (loadedFragment) {
+            var s = Snap("#svgout");
+            Snap.load("svg/shopping_car.svg?" + version, function (loadedFragment) {
                 let g = s.group();
                 g.append(loadedFragment);
-                let boat = s.select("#boat");
-                g.animate({ transform: 't100,100' }, 5000, mina.bounce);
-                
+                g.transform('t300, 100');
             });
-            // var r = s.rect(200, 200, 100, 100, 20, 20).attr({ stroke: '#123456', 'strokeWidth': 20, fill: 'red' });
-            // var c = s.circle(150, 150, 50).attr({ stroke: '#123456', 'strokeWidth': 20, fill: 'blue' });
+             Snap.load("svg/db.svg?" + version, function (loadedFragment) {
+                let g = s.group();
+                g.append(loadedFragment);
+                g.transform('t700, 100');
+            });
 
-            // var g = s.group(r, c);
+            var c = s.path("m 100 50 v 400").attr({ fill: "none", stroke: "blue", opacity: "1", "stroke-dasharray": "5,5" });
+            
+            // ['啤酒', '五香酱牛肉', '椒盐花生', '牛肉条', '甜辣鸭锁骨', '杭州熏鱼', '海蜇头', '猪头肉']
+            //     .forEach(function (value, i) {
+            //         let offset = i * 50;
+            //         var c = s.circle(100, 80 + offset, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            //         s.text(110, 85 + offset, value);
+            //     });
+            
+            let foodText = s.text(110, 85, '啤酒');
+            let foodMark = s.circle(100, 80, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            let food = s.g(foodText, foodMark);
+            food.clone().animate({transform: 't300, 166'}, 2000, mina.linear);
 
-            // g.animate({ transform: 't20' }, 5000, mina.bounce);
+            foodText = s.text(110, 85 + 50, '五香酱牛肉');
+            foodMark = s.circle(100, 80 + 50, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            food.clone().attr({id: 'beaf' }).animate({ transform: 't360, 116' }, 2000, mina.linear);
+            
+            foodText = s.text(110, 85 + 100, '椒盐花生');
+            foodMark = s.circle(100, 80 + 100, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            food.clone().animate({ transform: 't300, 40' }, 2000, mina.linear);
 
+            foodText = s.text(110, 85 + 150, '牛肉条');
+            foodMark = s.circle(100, 80 + 150, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            food.clone().attr({ id: 'beaf2' }).animate({ transform: 't390, -10' }, 2000, mina.linear);
+
+            foodText = s.text(110, 85 + 200, ' - 五香酱牛肉');
+            foodMark = s.circle(100, 80 + 200, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            s.select('#beaf').animate({ transform: 't550, 116' }, 2000, mina.linear);
+            // s.select('#beaf2').animate({ transform: 't0, 16' }, 2000, mina.linear);
+
+            foodText = s.text(110, 85 + 250, '甜辣鸭锁骨');
+            foodMark = s.circle(100, 80 + 250, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            food.clone().animate({ transform: 't350, -135' }, 2000, mina.linear);
+
+            foodText = s.text(110, 85 + 300, '猪头肉');
+            foodMark = s.circle(100, 80 + 300, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            food.clone().animate({ transform: 't370, -135' }, 2000, mina.linear);
         }
         $(document).ready(function () {
             show();

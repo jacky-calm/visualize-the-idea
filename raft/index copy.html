@@ -19,6 +19,7 @@
     <script src="scripts/raft/event_sourcing.js?3"></script>
     <script src="http://svg.dabbles.info/animate-object-path.js"></script>
     <!--    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/2.0.6/velocity.min.js"></script>-->
+
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
@@ -27,7 +28,7 @@
         crossorigin="anonymous"></script>
     <script>
         var s;
-        function show1() {
+        function show1(s) {
             let add = s.text(92, 85, ' +  ');
             let foodText = s.text(120, 85, '啤酒');
             let foodMark = s.circle(110, 80, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
@@ -35,34 +36,93 @@
             food.clone().animate({ transform: 't300, 166' }, 2000, mina.linear);
         }
 
-        function show_car() {
-            s = Snap("#svgout");
-            Snap.load("svg/shopping_car.svg?" + version, function (loadedFragment) {
-                let g = s.group().attr({ id: 'shopping_car' });
+        function show2(s) {
+            add = s.text(92, 85 + 50, ' +  ');
+            foodText = s.text(120, 85 + 50, '五香酱牛肉');
+            foodMark = s.circle(110, 80 + 50, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            food.clone().attr({ id: 'beaf' }).animate({ transform: 't360, 116' }, 2000, mina.linear);
+        }
+
+        function show3(s) {
+            add = s.text(92, 85 + 100, ' +  ');
+            foodText = s.text(120, 85 + 100, '椒盐花生');
+            foodMark = s.circle(110, 80 + 100, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            food.clone().animate({ transform: 't300, 40' }, 2000, mina.linear);
+        }
+
+        function show4(s) {
+            add = s.text(92, 85 + 150, ' +  ');
+            foodText = s.text(120, 85 + 150, '牛肉条');
+            foodMark = s.circle(110, 80 + 150, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            food.clone().attr({ id: 'beaf2' }).animate({ transform: 't390, -10' }, 2000, mina.linear);
+        }
+        function show5(s) {
+            add = s.text(92, 85 + 200, ' -  ');
+            foodText = s.text(120, 85 + 200, ' 五香酱牛肉');
+            foodMark = s.circle(110, 80 + 200, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            s.select('#beaf').animate({ transform: 't550, 116' }, 2000, mina.linear);
+            // s.path("m 100 20 h 100").attr({ fill: "none", stroke: "red", opacity: "1" });
+        }
+        function show6(s) {
+            add = s.text(92, 85 + 250, ' +  ');
+            foodText = s.text(120, 85 + 250, '甜辣鸭锁骨');
+            foodMark = s.circle(110, 80 + 250, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            food.clone().animate({ transform: 't350, -135' }, 2000, mina.linear);
+        }
+        function show7(s) {
+            add = s.text(92, 85 + 300, ' +  ');
+            foodText = s.text(120, 85 + 300, '猪头肉');
+            foodMark = s.circle(110, 80 + 300, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
+            food = s.g(foodText, foodMark);
+            food.clone().animate({ transform: 't370, -135' }, 2000, mina.linear);
+        }
+        function show8(s) {
+            Snap.load("svg/db.svg?" + version, function (loadedFragment) {
+                let g = s.group();
                 g.append(loadedFragment);
-                g.transform('t50, 100');
+                g.transform('t450, 20');
+                s.text(425, 115, '系统状态 State');
+            });
+        }
+        function show9(s) {
+            Snap.load("svg/file.svg?" + version, function (loadedFragment) {
+                let g = s.group();
+                g.append(loadedFragment);
+                g.transform('t250, 20');
+                s.text(225, 115, '事件日志 Event Log');
             });
         }
 
-        function put_item(item, transform) {
-            let beer = Snap("#svgout")
-                .g(s.paper.image(`gif/${item}.png?` + version, 120, 50))
-                .attr({ id: item });
-            beer.animate({ transform: transform }, 2000, mina.bounce);
+        function show10(s) {
+            s.path("m 320 50 h 100").attr({ fill: "none", stroke: "red", opacity: "1" });
+            s.text(350, 40, '生成');
+            s.path("M 410 40 L 420 50 L 410 60").attr({ fill: "none", stroke: "red", opacity: "1" });
         }
 
-        let steps = [show_car, 
-            put_item.bind(null, 'peanut', 't200, 180s0.3'),
-            put_item.bind(null, 'chicken2', 't150, 150s0.3'), 
-            put_item.bind(null, 'cucumber', 't200, 100s0.3'),
-            put_item.bind(null, 'pork', 't100, 200s0.2'), 
-            put_item.bind(null, 'chicken', 't150, 100s0.1'), 
-            put_item.bind(null, 'beer', 't50, 100')
-            ];
-        let index = 0;
+        function show11(s) {
+            s.select('#shopping_car').animate({ transform: 't50,-200s0.1' }, 2000, mina.linear);
+        }
+
+        function show0() {
+            s = Snap("#svgout");
+            Snap.load("svg/shopping_car.svg?" + version, function (loadedFragment) {
+                let g = s.group().attr({id:'shopping_car'});
+                g.append(loadedFragment);
+                g.transform('t300, 100');
+            });
+
+        }
+        var index = 0;
         $(document).ready(function () {
             $('#next').click(function () {
-                steps[index++](s);
+                console.log('next');
+                window["show" + index](s);
+                index++;
             });
             $('#thanks').click(function () {
                 Snap.load("svg/like.svg?" + version, function (loadedFragment) {
@@ -71,13 +131,14 @@
                     g.transform('t400, 400');
                 });
             });
-            // $('#all').click(function () {
-                for (let i = 0; i < 10; i++) {
+            $('#all').click(function () {
+                console.log('next');
+                for (let i = 0; i < 20; i++) {
                     setTimeout(() => {
-                       steps[index++](s);
+                        window["show" + i](s);
                     }, 1000 * i);
                 }
-            // });
+            });
         });
 
 
@@ -102,8 +163,7 @@
             </div>
         </div>
         <div class="row">
-            <div id='actions' class="col-md-8 bg-light"></div>
-            <div id='actions' class="col-md-4 bg-light">
+            <div id='actions' class="col-md-12 bg-light">
                 <div class="container">
                     <div class="row">
                         <div class="card">

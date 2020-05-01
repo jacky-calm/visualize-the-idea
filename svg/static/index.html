@@ -9,17 +9,17 @@
 
 <body>
     <svg id="svgout" width="600" height="600">
-        <circle cx="0" cy="0" r="10" fill="red" stroke="red" />
-        <circle cx="300" cy="300" r="60" fill="yellow" stroke="red" />
-        <ellipse cx="270" cy="280" rx="10" ry="6" fill="none" stroke='black' stroke-width='1' />
-        <ellipse cx="330" cy="280" rx="10" ry="6" fill="none" stroke='black' stroke-width='1' />
-        <circle cx="270" cy="280" r="6" fill="blue" stroke="none" />
-        <circle cx="330" cy="280" r="6" fill="blue" stroke="none" />
-        <line x1='280' y1='310' x2='320' y2='310' stroke='blue' stroke-width='1'/>
-        <path d='M280 310 C280,340 320,340 320,310' fill='pink'/>
-        <polygon points='300,380 200,550 400,550' fill='green'/>
-
-
+        <circle cx='0' cy='0' r='10' fill='red' stroke='none' />
+        <g id='sun' transform='rotate(-30, 200, 200)' style="fill-opacity: 0.9">
+            <circle cx='200' cy='200' r='60' fill='yellow' stroke='red'/>
+            <ellipse cx='170' cy='180' rx='10' ry='6' fill='none' stroke='black' stroke-width='2' />
+            <ellipse cx='230' cy='180' rx='10' ry='6' fill='none' stroke='black' stroke-width='2' />
+            <circle cx='170' cy='180' r='6' fill='blue' />
+            <circle cx='230' cy='180' r='6' fill='blue' />
+            <line x1='185' y1='210' x2='215' y2='210' stroke='blue' stroke-width='2' />
+            <path d='M185,210 C185,230 215,230 215,210' stroke='none' fill='pink' />
+        </g>
+        <polygon points='200,300 100,450 300,450' fill='green' />
     </svg>
     <script>
         let s = Snap("#svgout");

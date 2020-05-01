@@ -28,6 +28,7 @@
     <script>
         var s;
         var delay = 1000;
+        var logIndex = 1;
         function show1() {
             let add = s.text(92, 85, ' +  ');
             let foodText = s.text(120, 85, '啤酒');
@@ -45,7 +46,7 @@
             });
         }
 
-        function put_item(item, transform, isnew) {
+        function put_item(item, transform, isnew = false) {
             let g = Snap("#svgout")
                 .g(s.paper.image(`gif/${item[0]}.png?` + version, 120, 50))
                 .attr({ id: item[0] });
@@ -56,20 +57,32 @@
                     .text(450, 300 + 30 * item[2], item[2] + ', ' + item[1])
                     .animate({ transform: `t-200, 200+${30 * item[2]}` }, delay, mina.linear);
             };
-            if (isnew) {
+            if (isnew == true) {
                 Snap("#svgout").g()
                     .attr({ id: item[0] + '-log' })
-                    .text(250, 200, item[2] + ', 添加 ' + item[1])
-                    .animate({ transform: `t200, ${30 * item[2]}` },
+                    .text(250, 200, logIndex + ', 添加 ' + item[1])
+                    .animate({ transform: `t200, ${30 * logIndex}` },
                         delay, mina.linear, cb);
+                logIndex++;
             } else {
-                cb(); 
+                Snap("#svgout").g()
+                    .attr({ id: item[0] + '-record' })
+                    .text(250, 200, item[2] + ', ' + item[1])
+                    .animate({ transform: `t200, ${30 * item[2]}` }, delay, mina.linear);
             }
-
         }
 
-        function rm_item(items, isnew) {
+        function rm_item(items, isnew = false, reason = '下单') {
             items.forEach(item => {
+                if (isnew == true) {
+                    Snap("#svgout").g()
+                        .attr({ id: item[0] + '-log' })
+                        .text(250, 200, logIndex + ', 移除 ' + item[1] + ', ' + reason)
+                        .animate({ transform: `t200, ${30 * logIndex}` },
+                            delay, mina.linear);
+                    logIndex++;
+                }
+
                 s.select(`#${item[0]}`).animate({ transform: 't1000,0' }, delay, mina.linear);
                 s.select(`#${item[0] + '-record'}`).animate({ transform: 't1000,0' }, delay, mina.linear);
             });
@@ -88,14 +101,14 @@
         let statePatternSteps = [
             show.bind(null, car, 't50, 120s1.2'),
             show.bind(null, db, 't400, 100s1.2'),
-            put_item.bind(null, peanut, 't200, 200s0.3'),
-            put_item.bind(null, chicken2, 't190, 150s0.3'),
-            put_item.bind(null, cucumber, 't200, 100s0.3'),
-            put_item.bind(null, pork, 't100, 200s0.2'),
-            put_item.bind(null, chicken, 't150, 100s0.1'),
-            rm_item.bind(null, [chicken2], 't150, 100s0.1'),
-            put_item.bind(null, beer, 't60, 100'),
-            rm_item.bind(null, [peanut, cucumber, pork, chicken, beer], 't150, 100s0.1'),
+            put_item.bind(null, peanut, 't200, 200s0.3', false),
+            put_item.bind(null, chicken2, 't190, 150s0.3', false),
+            put_item.bind(null, cucumber, 't200, 100s0.3', false),
+            put_item.bind(null, pork, 't100, 200s0.2', false),
+            put_item.bind(null, chicken, 't150, 100s0.1', false),
+            rm_item.bind(null, [chicken2], false),
+            put_item.bind(null, beer, false, '不喜欢'),
+            rm_item.bind(null, [peanut, cucumber, pork, chicken, beer], true, '下单'),
         ];
         let eventPatternSteps = [
             show.bind(null, car, 't50, 120s1.2'),
@@ -106,9 +119,9 @@
             put_item.bind(null, cucumber, 't200, 100s0.3', true),
             put_item.bind(null, pork, 't100, 200s0.2', true),
             put_item.bind(null, chicken, 't150, 100s0.1', true),
-            rm_item.bind(null, [chicken2], 't150, 100s0.1', true),
+            rm_item.bind(null, [chicken2], true, '不喜欢'),
             put_item.bind(null, beer, 't60, 100', true),
-            rm_item.bind(null, [peanut, cucumber, pork, chicken, beer], 't150, 100s0.1', true),
+            rm_item.bind(null, [peanut, cucumber, pork, chicken, beer], true, '下单'),
         ];
         let index = 0;
         $(document).ready(function () {
@@ -128,8 +141,8 @@
                 }
             };
 
-            // play(statePatternSteps);
-            play(eventPatternSteps);
+            play(statePatternSteps);
+            // play(eventPatternSteps);
 
 
         });

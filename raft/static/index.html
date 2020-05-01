@@ -18,7 +18,7 @@
     <script src="scripts/helper/util.js"></script>
     <script src="scripts/raft/event_sourcing.js?3"></script>
     <script src="http://svg.dabbles.info/animate-object-path.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/2.0.6/velocity.min.js"></script>
+    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/2.0.6/velocity.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
@@ -27,6 +27,7 @@
         crossorigin="anonymous"></script>
     <script>
         var s;
+        var delay = 1000;
         function show1() {
             let add = s.text(92, 85, ' +  ');
             let foodText = s.text(120, 85, '啤酒');
@@ -38,72 +39,100 @@
         function show(box, transform) {
             s = Snap("#svgout");
             Snap.load(`svg/${box[0]}.svg?` + version, function (loadedFragment) {
-                let g = s.group().attr({ id: transform });
+                let g = s.group().attr({ id: box[0] });
                 g.append(loadedFragment);
                 g.transform(transform);
             });
         }
 
-        function put_item(item, transform) {
+        function put_item(item, transform, isnew) {
             let g = Snap("#svgout")
                 .g(s.paper.image(`gif/${item[0]}.png?` + version, 120, 50))
                 .attr({ id: item[0] });
-            g.animate({ transform: transform }, 2000, mina.bounce);
-            let t = Snap("#svgout")
-                .text(250, 200, item[2]+', '+item[1])
-                .animate({transform:`t200, ${30 * item[2]}`}, 1000, mina.linear);
+            g.animate({ transform: transform }, delay, mina.bounce);
+            let cb = function () {
+                Snap("#svgout").g()
+                    .attr({ id: item[0] + '-record' })
+                    .text(450, 300 + 30 * item[2], item[2] + ', ' + item[1])
+                    .animate({ transform: `t-200, 200+${30 * item[2]}` }, delay, mina.linear);
+            };
+            if (isnew) {
+                Snap("#svgout").g()
+                    .attr({ id: item[0] + '-log' })
+                    .text(250, 200, item[2] + ', 添加 ' + item[1])
+                    .animate({ transform: `t200, ${30 * item[2]}` },
+                        delay, mina.linear, cb);
+            } else {
+                cb(); 
+            }
+
         }
 
-        let car = ['car','购物车']
-        let db = ['db','数据库']
-        let peanut = ['peanut','椒盐花生', 1]
-        let chicken2 = ['chicken2','烧鸡', 2]
-        let cucumber = ['cucumber','凉拌黄瓜', 3]
-        let pork = ['pork','猪头肉', 4]
-        let chicken = ['chicken','大盘鸡', 5]
-        let beer = ['beer','啤酒', 6]
+        function rm_item(items, isnew) {
+            items.forEach(item => {
+                s.select(`#${item[0]}`).animate({ transform: 't1000,0' }, delay, mina.linear);
+                s.select(`#${item[0] + '-record'}`).animate({ transform: 't1000,0' }, delay, mina.linear);
+            });
+        }
 
-        let steps = [
+        let car = ['car', '购物车']
+        let db = ['db', '数据库']
+        let file = ['file', '事件日志']
+        let peanut = ['peanut', '椒盐花生', 1]
+        let chicken2 = ['chicken2', '烧鸡', 2]
+        let cucumber = ['cucumber', '凉拌黄瓜', 3]
+        let pork = ['pork', '猪头肉', 4]
+        let chicken = ['chicken', '大盘鸡', 5]
+        let beer = ['beer', '啤酒', 6]
+
+        let statePatternSteps = [
             show.bind(null, car, 't50, 120s1.2'),
-            show.bind(null, db, 't450, 120s1.2'),
-            put_item.bind(null, peanut, 't200, 200s0.3'), 
+            show.bind(null, db, 't400, 100s1.2'),
+            put_item.bind(null, peanut, 't200, 200s0.3'),
             put_item.bind(null, chicken2, 't190, 150s0.3'),
             put_item.bind(null, cucumber, 't200, 100s0.3'),
             put_item.bind(null, pork, 't100, 200s0.2'),
             put_item.bind(null, chicken, 't150, 100s0.1'),
-            put_item.bind(null, beer, 't60, 100')
+            rm_item.bind(null, [chicken2], 't150, 100s0.1'),
+            put_item.bind(null, beer, 't60, 100'),
+            rm_item.bind(null, [peanut, cucumber, pork, chicken, beer], 't150, 100s0.1'),
+        ];
+        let eventPatternSteps = [
+            show.bind(null, car, 't50, 120s1.2'),
+            show.bind(null, file, 't450, 120s1.2'),
+            show.bind(null, db, 't150, 500s1.2'),
+            put_item.bind(null, peanut, 't200, 200s0.3', true),
+            put_item.bind(null, chicken2, 't190, 150s0.3', true),
+            put_item.bind(null, cucumber, 't200, 100s0.3', true),
+            put_item.bind(null, pork, 't100, 200s0.2', true),
+            put_item.bind(null, chicken, 't150, 100s0.1', true),
+            rm_item.bind(null, [chicken2], 't150, 100s0.1', true),
+            put_item.bind(null, beer, 't60, 100', true),
+            rm_item.bind(null, [peanut, cucumber, pork, chicken, beer], 't150, 100s0.1', true),
         ];
         let index = 0;
         $(document).ready(function () {
-            $('#next').click(function () {
-                steps[index++](s);
-            });
-            $('#thanks').click(function () {
+            let thanks = function () {
                 Snap.load("svg/like.svg?" + version, function (loadedFragment) {
                     let g = s.group();
                     g.append(loadedFragment);
                     g.transform('t400, 400');
                 });
-            });
-            // $('#all').click(function () {
-            for (let i = 0; i < 10; i++) {
-                setTimeout(() => {
-                    steps[index++](s);
-                }, 1000 * i);
-            }
-            // });
+            };
+
+            let play = function (pattern) {
+                for (let i = 0; i < pattern.length; i++) {
+                    setTimeout(() => {
+                        pattern[index++]();
+                    }, 2000 * i);
+                }
+            };
+
+            // play(statePatternSteps);
+            play(eventPatternSteps);
+
+
         });
-
-
-
-         //    s.path("m 80 30 v 400").attr({ fill: "none", stroke: "blue", opacity: "1", "stroke-dasharray": "5,5" });
-
-            // ['啤酒', '五香酱牛肉', '椒盐花生', '牛肉条', '甜辣鸭锁骨', '杭州熏鱼', '海蜇头', '猪头肉']
-            //     .forEach(function (value, i) {
-            //         let offset = i * 50;
-            //         var c = s.circle(110, 80 + offset, 5).attr({ stroke: 'blue', 'strokeWidth': 1, fill: 'none' });
-            //         s.text(110, 85 + offset, value);
-            //     });
     </script>
 </head>
 
@@ -112,10 +141,10 @@
         <div class="row">
             <div id='paper' class="col-md-12">
                 <!-- SVG paper -->
-                <svg id="svgout" width="800" height="500"></svg>
+                <svg id="svgout" width="800" height="800"></svg>
             </div>
         </div>
-        <div class="row">
+        <!-- <div class="row">
             <div id='actions' class="col-md-8 bg-light"></div>
             <div id='actions' class="col-md-4 bg-light">
                 <div class="container">
@@ -136,7 +165,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 </body>
 

@@ -15,10 +15,11 @@
     <script src="node_modules/@svgdotjs/svg.js/dist/svg.js"></script>
     <script src="node_modules/@svgdotjs/svg.draggable.js/dist/svg.draggable.js"></script>
     <script src="scripts/snap.svg.js"></script>
+    <script src="scripts/anime.js"></script>
     <script src="scripts/helper/util.js"></script>
     <script src="scripts/raft/event_sourcing.js?3"></script>
     <script src="http://svg.dabbles.info/animate-object-path.js"></script>
-    <!--    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/2.0.6/velocity.min.js"></script>-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/velocity/2.0.6/velocity.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
         integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
         crossorigin="anonymous"></script>
@@ -35,30 +36,48 @@
             food.clone().animate({ transform: 't300, 166' }, 2000, mina.linear);
         }
 
-        function show_car() {
+        function show(box, transform) {
             s = Snap("#svgout");
-            Snap.load("svg/shopping_car.svg?" + version, function (loadedFragment) {
-                let g = s.group().attr({ id: 'shopping_car' });
+            Snap.load(`svg/${box}.svg?` + version, function (loadedFragment) {
+                let g = s.group().attr({ id: transform });
                 g.append(loadedFragment);
-                g.transform('t50, 100');
+                g.transform(transform);
             });
         }
 
         function put_item(item, transform) {
-            let beer = Snap("#svgout")
+            let g = Snap("#svgout")
                 .g(s.paper.image(`gif/${item}.png?` + version, 120, 50))
                 .attr({ id: item });
-            beer.animate({ transform: transform }, 2000, mina.bounce);
+            g.animate({ transform: transform }, 2000, mina.bounce);
         }
 
-        let steps = [show_car, 
-            put_item.bind(null, 'peanut', 't200, 180s0.3'),
-            put_item.bind(null, 'chicken2', 't150, 150s0.3'), 
+        function db_item(item, transform) { 
+            let g = Snap("#svgout")
+                .g(s.paper.image(`gif/${item}.png?` + version, 120, 50))
+                .attr({ id: item + '.record'});
+            g.animate({ transform: transform }, 0, mina.bounce);
+            beer.clone(s.select(`#${item}`)).attr({ id: item + '.record', transform: 'translate(300,100)' });
+            s.select(`#${recordId}`).animate({ transform: "s0.1" }, 1000, mina.linear)
+        }
+
+        let peanut = ['椒盐花生']
+        let chicken2 = ['烧鸡']
+        let cucumber = ['凉拌黄瓜']
+        let port = ['猪头肉']
+        let chicken = ['大盘鸡']
+        let beer = ['啤酒']
+
+        let steps = [
+            show.bind(null, 'car', 't50, 120s1.2'),
+            put_item.bind(null, 'peanut', 't200, 200s0.3'),
+            show.bind(null, 'db', 't450, 120s1.2'),
+            put_item.bind(null, 'chicken2', 't190, 150s0.3'),
             put_item.bind(null, 'cucumber', 't200, 100s0.3'),
-            put_item.bind(null, 'pork', 't100, 200s0.2'), 
-            put_item.bind(null, 'chicken', 't150, 100s0.1'), 
-            put_item.bind(null, 'beer', 't50, 100')
-            ];
+            put_item.bind(null, 'pork', 't100, 200s0.2'),
+            put_item.bind(null, 'chicken', 't150, 100s0.1'),
+            put_item.bind(null, 'beer', 't60, 100')
+        ];
         let index = 0;
         $(document).ready(function () {
             $('#next').click(function () {
@@ -72,11 +91,11 @@
                 });
             });
             // $('#all').click(function () {
-                for (let i = 0; i < 10; i++) {
-                    setTimeout(() => {
-                       steps[index++](s);
-                    }, 1000 * i);
-                }
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    steps[index++](s);
+                }, 1000 * i);
+            }
             // });
         });
 

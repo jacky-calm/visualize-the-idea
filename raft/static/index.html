@@ -15,7 +15,6 @@
     <script src="node_modules/@svgdotjs/svg.js/dist/svg.js"></script>
     <script src="node_modules/@svgdotjs/svg.draggable.js/dist/svg.draggable.js"></script>
     <script src="scripts/snap.svg.js"></script>
-    <script src="scripts/anime.js"></script>
     <script src="scripts/helper/util.js"></script>
     <script src="scripts/raft/event_sourcing.js?3"></script>
     <script src="http://svg.dabbles.info/animate-object-path.js"></script>
@@ -38,7 +37,7 @@
 
         function show(box, transform) {
             s = Snap("#svgout");
-            Snap.load(`svg/${box}.svg?` + version, function (loadedFragment) {
+            Snap.load(`svg/${box[0]}.svg?` + version, function (loadedFragment) {
                 let g = s.group().attr({ id: transform });
                 g.append(loadedFragment);
                 g.transform(transform);
@@ -47,36 +46,32 @@
 
         function put_item(item, transform) {
             let g = Snap("#svgout")
-                .g(s.paper.image(`gif/${item}.png?` + version, 120, 50))
-                .attr({ id: item });
+                .g(s.paper.image(`gif/${item[0]}.png?` + version, 120, 50))
+                .attr({ id: item[0] });
             g.animate({ transform: transform }, 2000, mina.bounce);
+            let t = Snap("#svgout")
+                .text(250, 200, item[2]+', '+item[1])
+                .animate({transform:`t200, ${30 * item[2]}`}, 1000, mina.linear);
         }
 
-        function db_item(item, transform) { 
-            let g = Snap("#svgout")
-                .g(s.paper.image(`gif/${item}.png?` + version, 120, 50))
-                .attr({ id: item + '.record'});
-            g.animate({ transform: transform }, 0, mina.bounce);
-            beer.clone(s.select(`#${item}`)).attr({ id: item + '.record', transform: 'translate(300,100)' });
-            s.select(`#${recordId}`).animate({ transform: "s0.1" }, 1000, mina.linear)
-        }
-
-        let peanut = ['椒盐花生']
-        let chicken2 = ['烧鸡']
-        let cucumber = ['凉拌黄瓜']
-        let port = ['猪头肉']
-        let chicken = ['大盘鸡']
-        let beer = ['啤酒']
+        let car = ['car','购物车']
+        let db = ['db','数据库']
+        let peanut = ['peanut','椒盐花生', 1]
+        let chicken2 = ['chicken2','烧鸡', 2]
+        let cucumber = ['cucumber','凉拌黄瓜', 3]
+        let pork = ['pork','猪头肉', 4]
+        let chicken = ['chicken','大盘鸡', 5]
+        let beer = ['beer','啤酒', 6]
 
         let steps = [
-            show.bind(null, 'car', 't50, 120s1.2'),
-            put_item.bind(null, 'peanut', 't200, 200s0.3'),
-            show.bind(null, 'db', 't450, 120s1.2'),
-            put_item.bind(null, 'chicken2', 't190, 150s0.3'),
-            put_item.bind(null, 'cucumber', 't200, 100s0.3'),
-            put_item.bind(null, 'pork', 't100, 200s0.2'),
-            put_item.bind(null, 'chicken', 't150, 100s0.1'),
-            put_item.bind(null, 'beer', 't60, 100')
+            show.bind(null, car, 't50, 120s1.2'),
+            show.bind(null, db, 't450, 120s1.2'),
+            put_item.bind(null, peanut, 't200, 200s0.3'), 
+            put_item.bind(null, chicken2, 't190, 150s0.3'),
+            put_item.bind(null, cucumber, 't200, 100s0.3'),
+            put_item.bind(null, pork, 't100, 200s0.2'),
+            put_item.bind(null, chicken, 't150, 100s0.1'),
+            put_item.bind(null, beer, 't60, 100')
         ];
         let index = 0;
         $(document).ready(function () {

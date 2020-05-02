@@ -100,16 +100,16 @@
 
         let statePatternSteps = [
             show.bind(null, car, 't50, 120s1.2'),
-            show.bind(null, db, 't400, 100s1.2'),
+            show.bind(null, db, 't450, 100s1.2'),
             put_item.bind(null, peanut, 't200, 200s0.3', false),
             put_item.bind(null, chicken2, 't190, 150s0.3', false),
             put_item.bind(null, cucumber, 't200, 100s0.3', false),
             put_item.bind(null, pork, 't100, 200s0.2', false),
             put_item.bind(null, chicken, 't150, 100s0.1', false),
             rm_item.bind(null, [chicken2], false),
-            put_item.bind(null, beer, false, '不喜欢'),
-            rm_item.bind(null, [peanut, cucumber, pork, chicken, beer], true, '下单'),
-        ];
+            put_item.bind(null, beer, 't60, 100', false, '不喜欢'),
+            rm_item.bind(null, [peanut, cucumber, pork, chicken, beer], false, '下单'),
+        ]; 
         let eventPatternSteps = [
             show.bind(null, car, 't50, 120s1.2'),
             show.bind(null, file, 't450, 120s1.2'),
@@ -137,13 +137,12 @@
                 for (let i = 0; i < pattern.length; i++) {
                     setTimeout(() => {
                         pattern[index++]();
-                    }, 2000 * i);
+                    }, 5000 * i);
                 }
             };
 
-            play(statePatternSteps);
-            // play(eventPatternSteps);
-
+            // play(statePatternSteps);  
+            play(eventPatternSteps);  
 
         });
     </script>
